@@ -433,6 +433,55 @@ At this stage, there are no known unfixed bugs. All features are expected to fun
 ---
 
 ## Deployment
+
+### Project Setup Guide for Windows
+
+This guide will help you set up the project in a virtual environment and install the necessary dependencies on Windows.
+
+#### Prerequisites
+
+- Ensure you have Python installed (version 3.x).
+- Make sure you have Git installed.
+
+#### Steps to Set Up
+
+2. **Create a Virtual Environment**:
+   Navigate to the directory where you want to set up the project and create a virtual environment. Replace `myenv` with your desired environment name:
+   ```bash
+   python -m venv myenv
+   ```
+
+3. **Activate the Virtual Environment**:
+   Activate the virtual environment:
+   ```bash
+   myenv\Scripts\activate
+   ```
+
+4. **Clone the Repository**:
+   Clone the project repository from GitHub.
+   ```bash
+   git clone https://github.com/OSawani/MarketPulseAnalytics.git
+   ```
+
+5. **Navigate into the Project Directory**:
+   Change to the directory of the cloned repository:
+   ```bash
+   cd repository
+   ```
+
+6. **Install Dependencies**:
+   Install the required dependencies listed in `requirements.txt`:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+#### Additional Information
+
+- To deactivate the virtual environment, simply run:
+  ```bash
+  deactivate
+  ```
+
 **Heroku**  
 The App live link is: [https://insider-trading-analysis.herokuapp.com/](https://insider-trading-analysis.herokuapp.com/) (Link will be updated upon deployment.)  
 **Python Version:** Specified in runtime.txt (e.g., python-3.8.10)  
