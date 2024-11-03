@@ -16,3 +16,23 @@ data/processed/*
 
 # Models
 models/*
+
+# Virtual environment
+venv/
+.env
+
+# Distribution / packaging
+.build/
+dist/
+.egg-info/
+.eggs/
+*.egg
+
+
+# Visual Studio Code
+.vscode/
+
+# Logs and reports
+logs/
+reports/figures/*.png
+reports/EDA/*.html
