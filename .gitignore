@@ -8,3 +8,11 @@ node_modules/
 .github/
 cloudinary_python.txt
 kaggle.json
+
+# Data files
+data/raw/*
+data/interim/*
+data/processed/*
+
+# Models
+models/*
