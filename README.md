@@ -25,6 +25,8 @@
 
 The Insider Trading Analysis and Prediction Platform utilises three primary datasets to analyse and predict stock price movements based on insider trading activities and financial indicators. The datasets have been carefully collected and processed to ensure they are of reasonable size, optimising model training time and adhering to repository size limitations.
 
+The repo structure and file management facilitates easy data access, efficient processing, compliance with data usage policies, and scalability for future extensions.
+
 ### 1. Insider Trading Data Set
 - **Source:** U.S. Securities and Exchange Commission (SEC) EDGAR Database.
 - **Description:** This dataset contains detailed records of insider transactions filed with the SEC. Each record represents a transaction made by a company insider, such as executives, directors, or significant shareholders.
