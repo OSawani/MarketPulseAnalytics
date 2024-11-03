@@ -599,7 +599,7 @@ The App live link is: [https://insider-trading-analysis.herokuapp.com/](https://
    - Example: `docs: update README with usage instructions`
    
 4. **style:** Changes that do not affect the logic (e.g., formatting).
-   - Example: `style: reformat code for readability`
+   - Example: `style: adjusts UI screen layout`
    
 5. **refactor:** Code changes that neither fix a bug nor add a feature but improve structure.
    - Example: `refactor: simplify model training code`
