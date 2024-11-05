@@ -1,3 +1,29 @@
-# you should list here the libraries you will use in the project
-streamlit==0.85.0
+# Libraries for web apps and data visualization
+streamlit
 altair<5
+dash
+dash-bootstrap-components
+
+# Data fetching and parsing
+kaggle==1.5.12
+requests
+beautifulsoup4
+
+# Data manipulation
+pandas
+
+# Machine learning essentials
+scikit-learn
+numpy
+scipy
+
+# Plotting and visualization
+matplotlib
+seaborn
+plotly
+bokeh
+
+# Deep learning
+torch
+torchvision
+torchaudio
