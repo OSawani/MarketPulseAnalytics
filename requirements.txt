@@ -18,6 +18,7 @@ scikit-learn
 numpy
 scipy
 pandas
+xgboost
 
 # Deep learning
 torch
