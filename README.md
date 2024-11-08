@@ -46,7 +46,8 @@ By running the jupyter notebooks in order by name, the user can first load raw d
 Afterwards, the user can process it further to become 'processed' and then use it for analysis and prediction.
 Features engineering, data cleansing, and sanity checks are performed at those stages to ensure the data is ready for model training and evaluation.
 Missing values are handled, categorical encoding is employed, lagged values are created, and moving averages are calculated to enrich the dataset and improve model performance.
-
+Here is the folder structure:
+![alt text](dataset_folder_structure.png)
 
 ### 1. Insider Trading Data Set
 - **Source:** U.S. Securities and Exchange Commission (SEC) EDGAR Database.
