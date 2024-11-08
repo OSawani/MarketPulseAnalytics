@@ -1,31 +1,52 @@
-# ![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
-
 # Insider Trading Analysis and Prediction Platform
 
 ## Table of Contents
+- [Overview](#overview)
 - [Dataset Content](#dataset-content)
   - [1. Insider Trading Data Set](#1-insider-trading-data-set)
-  - [2. Financial Data (2014-2018)](#2-financial-data-2014-2018)
-  - [3. Stock Price Data](#3-stock-price-data)
-- [Business Requirements](#business-requirements)
-- [Hypotheses and How to Validate](#hypotheses-and-how-to-validate)
-- [The Rationale to Map the Business Requirements to the Data Visualisations and ML Tasks](#the-rationale-to-map-the-business-requirements-to-the-data-visualisations-and-ml-tasks)
-- [ML Business Case](#ml-business-case)
+  - [2. Stock Price Data](#2-stock-price-data)
+- [Hypotheses](#hypotheses-and-how-to-validate)
 - [Dashboard Design](#dashboard-design)
-- [Unfixed Bugs](#unfixed-bugs)
 - [Deployment](#deployment)
 - [Main Data Analysis and Machine Learning Libraries](#main-data-analysis-and-machine-learning-libraries)
 - [Commit Messages Prefixes](#commit-messages-prefixes)
-- [Credits](#credits)
 - [Acknowledgements](#acknowledgements)
 
 ---
 
+## Overview
+Predicting stocks prices is a challenging task due to the inherent volatility and complexity of financial markets. By leveraging insider trading data and financial indicators, we aim to enhance investment strategies and provide valuable insights to investors. 
+This project serves as a starting point to predict 'Low', 'High', 'Open', 'Close', and 'Volume' stock prices.
+We use two datasets: insider training dataset and stocks price dataset from Kaggle and SEC respectively.
+The goal is to enhance the stocks price prediction if necessary by adding more features from the insiders trading dataset.
+More optimizations and features can be done as well as more datasets to improve the model accuracy.
+
+- **Aim:** To enhance investment strategies by providing insights and predictions based on insider trading activities and financial indicators.
+  
+- **Learning Methods:**
+  - **Regression Models:** We use LinearRegressor and XGBoostRegressor to predict stock 'Low', 'High', 'Open', 'Close', and 'Volume' prices.
+
+- **Ideal Outcomes:**
+  - Accurate stock price predictions.
+  - Identification of significant insider trading patterns.
+
+- **Metrics Used:**
+  - R2 score
+  - RMSE
+  - MAPE
+---
+
+
 ## Dataset Content
 
-The Insider Trading Analysis and Prediction Platform utilises three primary datasets to analyse and predict stock price movements based on insider trading activities and financial indicators. The datasets have been carefully collected and processed to ensure they are of reasonable size, optimising model training time and adhering to repository size limitations.
+The Insider Trading Analysis and Prediction Platform utilises two primary datasets to analyse and predict stock price movements based on insider trading activities and financial indicators. The datasets have been carefully collected and processed to ensure they are of reasonable size, optimising model training time and adhering to repository size limitations.
 
 The repo structure and file management facilitates easy data access, efficient processing, compliance with data usage policies, and scalability for future extensions.
+By running the jupyter notebooks in order by name, the user can first load raw data and process it to become 'interim'.
+Afterwards, the user can process it further to become 'processed' and then use it for analysis and prediction.
+Features engineering, data cleansing, and sanity checks are performed at those stages to ensure the data is ready for model training and evaluation.
+Missing values are handled, categorical encoding is employed, lagged values are created, and moving averages are calculated to enrich the dataset and improve model performance.
+
 
 ### 1. Insider Trading Data Set
 - **Source:** U.S. Securities and Exchange Commission (SEC) EDGAR Database.
@@ -132,77 +153,8 @@ The insider trading data is organized into quarterly folders, each containing mu
 - **Data Storage:**
   - Organised in CSV files for efficient querying and analysis.
 
-### 2. Financial Data (2014-2018)
-- **Source:** Collected from company financial statements and public records.
-- **Description:** This dataset includes key financial metrics and ratios for companies from 2014 to 2018, stored in five CSV files corresponding to each year.
 
-#### Data Structure and Variables:
-Each CSV file contains financial data for multiple companies for a specific year.
-
-#### Data Source:
-You can access the insider transactions dataset from kaggle at the following link: [200+ Financial Indicators of US stocks (2014-2018)](https://www.kaggle.com/datasets/cnic92/200-financial-indicators-of-us-stocks-20142018)
-
-**Key Variables and Corresponding Columns:**
-- **Ticker:**
-  - **Column:** Unnamed: 0
-  - **Description:** Contains the stock ticker symbol.
-
-- **Fiscal Date Ending:**
-  - **Column:** Not explicitly present. May use the file's year or other available data as a proxy.
-
-- **Gross Profit:**
-  - **Column:** Gross Profit
-  - **Description:** Total revenue minus the cost of goods sold.
-
-- **Total Revenue:**
-  - **Column:** Revenue
-  - **Description:** Total income generated from sales.
-
-- **Operating Income:**
-  - **Column:** Operating Income
-  - **Description:** Profit after deducting operating expenses.
-
-- **Net Income:**
-  - **Column:** Net Income
-  - **Description:** Total earnings after all expenses.
-
-- **Earnings Per Share (EPS):**
-  - **Column:** EPS
-  - **Description:** Net income divided by outstanding shares.
-
-- **Price-to-Earnings Ratio (P/E):**
-  - **Column:** priceEarningsRatio or PE ratio
-  - **Description:** Market value per share divided by EPS.
-
-- **Return on Equity (ROE):**
-  - **Column:** returnOnEquity or ROE
-  - **Description:** Net income divided by shareholders’ equity.
-
-- **Debt-to-Equity Ratio:**
-  - **Column:** debtEquityRatio
-  - **Description:** Total liabilities divided by shareholders’ equity.
-
-- **Current Ratio:**
-  - **Column:** currentRatio
-  - **Description:** Current assets divided by current liabilities.
-
-- **Dividend Yield:**
-  - **Column:** dividendYield
-  - **Description:** Dividend per share divided by price per share.
-
-#### Data Collection and Processing:
-- **Data Retrieval:**
-  - Data collected from annual reports and financial databases.
-  - Compiled into CSV files for each year from 2014 to 2018.
-
-- **Data Cleaning:**
-  - Verified data accuracy by cross-referencing sources.
-  - Handled missing data by imputation or exclusion.
-
-- **Data Storage:**
-  - Stored in CSV format, with each file representing a year.
-
-### 3. Stock Price Data
+### 2. Stock Price Data
 - **Source:** Historical stock price data collected for each company.
 - **Description:** Contains daily stock price information for each company, stored in individual .txt files per company.
 
@@ -257,180 +209,129 @@ Each .txt file represents a company's stock price data over a period.
 
 ---
 
-## Business Requirements
-The project aims to address the following business requirements:
 
-1. **Analyse the Impact of Insider Trading on Stock Prices**
-   - Understand how insider buying and selling activities influence stock price movements.
-   - Provide insights into the correlation between insider transactions and subsequent stock performance.
 
-2. **Predict Stock Price Movements Using Combined Data**
-   - Develop predictive models that integrate insider trading data with key financial indicators.
-   - Enhance investment decision-making by forecasting future stock prices with improved accuracy.
+## Hypotheses
 
-3. **Identify Patterns in Insider Trading Activities**
-   - Detect and analyse specific patterns or trends within insider trading data.
-   - Uncover potential signals for stock performance based on insider behavior.
+1. **Hypothesis 1:** Using only the stocks dataset, stocks metrics: 'Low', 'High', 'Open', 'Close', and 'Volume' can be predicted using linear approximation with no need for further features or dataset
+   - **Conclusion**
+     - 'Low', 'High', 'Open', and 'Close', can be approximated at low error and good R2 score with LinearRegressor.
+     - 'Volume' exhibited bigger error and negative R2 score with LinearRegressor.
 
-4. **Deliver an Interactive User Interface**
-   - Create a user-friendly dashboard for investors and analysts.
-   - Allow users to input parameters, view analyses, and receive real-time predictions.
+2. **Hypothesis 2:** If there is a coinciding insider activity with stocks trading, 'Volume' LinearRegressor Prediction will suffer if the insider information is ignored.
+   - **Conclusion:**
+     - Without incorporating any insider features (when they coincide with stocks public trading), the 'Volume' RMSE was in many cases better than points with no coinciding insider activity. 
+     - In other cases, the RMSE was worse.
+     - The negative R2 score means that the features used in the model are not sufficient to predict the target variable or potentially the model is not the best fit for the data or the target variable is not linearly correlated with the features.
 
----
 
-## Hypotheses and How to Validate
+3. **Hypothesis 3:** Using XGBoost (Extreme Gradient Boosting) can improve the 'Volume' regression predictions compared to LinearRegressor.
+   - **Conclusion**
+     - Indeed, the assumption about potential non-linear relationships between features and the target variable was correct since XGBoost improved the RMSE and R2 score for 'Volume' predictions.
 
-1. **Hypothesis 1:** Significant insider buying activity positively impacts future stock prices.
-   - **Validation Method:**
-     - Merge insider buying records with subsequent stock price data.
-     - Perform regression analysis to model the relationship between insider buying and stock returns.
-     - Use statistical tests (e.g., t-tests) to determine the significance of the relationship.
-
-2. **Hypothesis 2:** Specific patterns in insider trading can predict stock price volatility.
-   - **Validation Method:**
-     - Apply clustering algorithms to insider trading data to identify patterns.
-     - Analyse stock price volatility following these patterns.
-     - Conduct statistical tests (e.g., ANOVA) to assess if patterns are predictive of volatility changes.
-
-3. **Hypothesis 3:** Combining insider trading data with financial indicators improves stock price prediction accuracy.
-   - **Validation Method:**
-     - Develop predictive models using insider trading data alone and compare them with models that include financial indicators.
-     - Evaluate models using metrics like R², Mean Squared Error (MSE), and Root Mean Squared Error (RMSE).
-     - Use cross-validation to ensure robustness.
-
----
-
-## The Rationale to Map the Business Requirements to the Data Visualisations and ML Tasks
-
-- **Business Requirement 1:** Analyse the impact of insider trading on stock prices.
-  - **Data Visualisations:**
-    - Time-series plots showing stock prices with insider trading events marked.
-    - Scatter plots of transaction values versus subsequent stock returns.
-  - **ML Tasks:**
-    - Regression analysis to quantify the impact.
-    - Correlation studies to assess relationships.
-
-- **Business Requirement 2:** Predict stock price movements using combined data.
-  - **Data Visualisations:**
-    - Actual vs. predicted stock prices.
-    - Feature importance charts.
-  - **ML Tasks:**
-    - Develop regression models integrating both insider trading and financial data.
-    - Hyperparameter tuning for model optimization.
-
-- **Business Requirement 3:** Identify patterns in insider trading activities.
-  - **Data Visualisations:**
-    - Cluster plots showing different insider trading behaviors.
-    - Heatmaps indicating frequency and timing of trades.
-  - **ML Tasks:**
-    - Clustering algorithms to detect patterns.
-    - Feature engineering to create relevant variables.
-
-- **Business Requirement 4:** Deliver an interactive user interface.
-  - **Data Visualisations:**
-    - Interactive dashboards with customisable charts.
-  - **ML Tasks:**
-    - Implement real-time predictions and user input handling.
-
----
-
-## ML Business Case
-
-- **Aim:** To enhance investment strategies by providing insights and predictions based on insider trading activities and financial indicators.
-  
-- **Learning Methods:**
-  - **Supervised Learning:**
-    - Regression models (e.g., Linear Regression, Random Forest Regressor).
-  - **Unsupervised Learning:**
-    - Clustering algorithms (e.g., K-Means) for pattern recognition.
-
-- **Ideal Outcomes:**
-  - Accurate stock price predictions.
-  - Identification of significant insider trading patterns.
-
-- **Success Metrics:**
-  - **Regression Models:** High R² scores, low MSE/RMSE.
-  - **Clustering:** Meaningful clusters with high silhouette scores.
-
-- **Model Output and Relevance:**
-  - **Predictive Insights:** Assist investors in making informed decisions.
-  - **Pattern Detection:** Provide signals that could indicate market movements.
-
-- **Heuristics and Training Data:**
-  - Utilise historical data spanning multiple years.
-  - Incorporate lag variables for delayed effects.
-  - Normalise and scale features for consistency.
+4. **Hypothesis 4:** The 'Volume' prediction can be further improved by incorporating insider trading features and more engineered features (lagged features, moving averages, etc.).
+   - **Conclusion**
+     - The 'Volume' prediction was further improved.
+     - Engineered features made the context of insider information more helpful in predicting the 'Volume' target variable as proven from features importance.
+    
 
 ---
 
 ## Dashboard Design
 
-The dashboard will consist of seven main pages:
+The dashboard will consist of 3 main pages. All of them share a similar layout.
+For Notebook 0.3 and 0.5, the user selects a date range and then the backend predicts the last 20% of the date period.
+The user can select stocks from different companies and get predictions accordingly for various metrics. RMSE, MAPE, and R2 will be reported along with features importance.
 
-1. **Project Summary**
+1. **Notebook 0.1**
    - **Content:**
-     - Introduction to the project, objectives, and scope.
-     - Explanation of key terms and datasets.
-   - **Widgets:**
-     - Text blocks.
-     - Images or icons representing key concepts.
-
-2. **Data Analysis**
+     - A visualization of various data points related to stocks and insiders datasets.
+     - Allows the user to explore different scenarios and identify patterns/trends.
+   - **Related Hypotheses:**
+     - Hypothesis 2 can be seen by playing around with the filtering criteria and observing the 'Volume' target variable RMSE and R2 score on The delta subplot.
+2. **Notebook 0.3**
    - **Content:**
-     - Results of exploratory data analysis.
-     - Visualisations of insider trading and stock price data.
-   - **Widgets:**
-     - Interactive charts (time-series plots, scatter plots).
-     - Filters for date ranges, companies, and insider types.
-
-3. **User Input Interface**
+     - A visualization of future predictions based on the given date range.
+     - From the date range, the most recent 20% datapoints will simulate future predictions and show the actual values at the same time.
+   - **Related Hypotheses:**
+     - Hypothesis 1.
+3. **Notebook0.5**
    - **Content:**
-     - Forms for user inputs (e.g., company ticker, date range).
-   - **Widgets:**
-     - Text input fields.
-     - Dropdown menus.
-     - Sliders and checkboxes.
+     - A visualization of future predictions based on the given date range.
+     - From the date range, the most recent 20% datapoints will simulate future predictions and show the actual values at the same time.
+   - **Related Hypotheses:**
+     - Hypothesis 4 can be seen by playing around with filtering criteria and observing the 'Volume' target variable RMSE and R2 score on The delta subplot.
+        - Apple Stock Analysis for the Entire Year of 2014
+          - Improved volume RMSE from 2.77e7 (linear regression) to 2.70e7 using XGBoost without lag features and moving averages.
+          - Further improved volume RMSE from 2.70e7 to 2.35e7 using XGBoost with lag features, moving averages, and insider data.
 
-4. **Project Hypotheses**
-   - **Content:**
-     - Presentation of hypotheses and validation methods.
-     - Visual evidence supporting or refuting hypotheses.
-   - **Widgets:**
-     - Tabs or accordions to navigate between hypotheses.
-     - Interactive graphs.
+        - Apple Stock Analysis for the Period from 2014 to 2017
+          - Improved volume RMSE from 2.14e7 (linear regression) to 2.13e7 using XGBoost without lag features and moving averages.
+          - Further improved volume RMSE from 2.13e7 to 1.18e7 using XGBoost with lag features, moving averages, and insider data.
 
-5. **Model Performance**
-   - **Content:**
-     - Performance metrics and evaluation results.
-     - Comparison of different models.
-   - **Widgets:**
-     - Charts showing model performance.
-     - Tables summarizing metrics.
+        - Hyperparameter Tuning Results
+          - Fitting 5 folds for each of 192 candidates, totaling 960 fits. (Below Sample Results Summary)
+            - Best hyperparameters found: 
+              ```json
+              {
+                "regressor__colsample_bytree": 0.8,
+                "regressor__learning_rate": 0.05,
+                "regressor__max_depth": 4,
+                "regressor__n_estimators": 300,
+                "regressor__subsample": 0.9
+              }
+              ```
+            - Best CV score: 11835991.344843375 (RMSE)
+            - Rank 1: 
+              ```json
+              {
+                "regressor__colsample_bytree": 0.8,
+                "regressor__learning_rate": 0.05,
+                "regressor__max_depth": 4,
+                "regressor__n_estimators": 300,
+                "regressor__subsample": 0.9
+              }
+              ```
+              with score: 1.18e7
+            - Rank 2: 
+              ```json
+              {
+                "regressor__colsample_bytree": 0.8,
+                "regressor__learning_rate": 0.05,
+                "regressor__max_depth": 4,
+                "regressor__n_estimators": 300,
+                "regressor__subsample": 0.7
+              }
+              ```
+              with score: 1.21e7
+            - Rank 3: 
+              ```json
+              {
+                "regressor__colsample_bytree": 0.8,
+                "regressor__learning_rate": 0.05,
+                "regressor__max_depth": 4,
+                "regressor__n_estimators": 100,
+                "regressor__subsample": 0.9
+              }
+              ```
+              with score: 1.21e7
 
-6. **Insider Trading Patterns**
-   - **Content:**
-     - Analysis of patterns found in insider trading data.
-     - Implications of these patterns.
-   - **Widgets:**
-     - Cluster diagrams.
-     - Heatmaps.
-     - Interactive pattern selectors.
+          - Best hyperparameters found: 
+            ```json
+            {
+              "regressor__colsample_bytree": 0.8,
+              "regressor__learning_rate": 0.05,
+              "regressor__max_depth": 4,
+              "regressor__n_estimators": 300,
+              "regressor__subsample": 0.9
+            }
+            
+      ---
 
-7. **Conclusions and Recommendations**
-   - **Content:**
-     - Summarised findings.
-     - Recommendations for users.
-     - Potential actions based on insights.
-   - **Widgets:**
-     - Text blocks.
-     - Downloadable reports or summaries.
 
----
 
-## Unfixed Bugs
-At this stage, there are no known unfixed bugs. All features are expected to function as intended. Any future bugs discovered during development, especially those arising from limitations in frameworks or technologies used, will be documented here along with explanations.
 
----
+
 
 ## Deployment
 
@@ -487,32 +388,36 @@ The App live link is: [https://insider-trading-analysis.herokuapp.com/](https://
 **Python Version:** Specified in runtime.txt (e.g., python-3.8.10)  
 
 **Deployment Steps:**
-1. **Log in to Heroku and Create an App**
-   - Navigate to the Heroku dashboard and click "New" > "Create new app."
-   - Enter a unique app name and select the appropriate region.
-   
-2. **Set Up Deployment Method**
-   - Go to the "Deploy" tab.
-   - Under "Deployment method," select "GitHub."
-   - Connect your GitHub account if not already connected.
+  1. **Log in to Heroku and Create an App**
+    - Navigate to the Heroku dashboard and click "New" > "Create new app."
+    - Enter a unique app name and select the appropriate region.
+    
+  2. **Set Up Deployment Method**
+    - Go to the "Deploy" tab.
+    - Under "Deployment method," select "GitHub."
+    - Connect your GitHub account if not already connected.
 
-3. **Connect to GitHub Repository**
-   - Search for your repository name and click "Connect."
+  3. **Connect to GitHub Repository**
+    - Search for your repository name and click "Connect."
 
-4. **Deploy the Branch**
-   - Select the branch you want to deploy (e.g., main).
-   - Click "Deploy Branch."
-   - Monitor the build logs to ensure successful deployment.
+  4. **Deploy the Branch**
+    - Select the branch you want to deploy (e.g., main).
+    - Click "Deploy Branch."
+    - Monitor the build logs to ensure successful deployment.
 
-5. **Open the App**
-   - Once deployment is complete, click "Open App" to access the application.
+  5. **Open the App**
+    - Once deployment is complete, click "Open App" to access the application.
 
-6. **Handle Slug Size Issues**
-   - If the slug size exceeds Heroku's limits:
-     - Add large files not required for the app to the .slugignore file.
-     - Optimize dependencies listed in requirements.txt by removing unnecessary packages.
+  6. **Handle Slug Size Issues**
+    - If the slug size exceeds Heroku's limits:
+      - Add large files not required for the app to the .slugignore file.
+      - Optimize dependencies listed in requirements.txt by removing unnecessary packages.
 
 ---
+
+
+
+
 
 ## Main Data Analysis and Machine Learning Libraries
 
@@ -524,7 +429,7 @@ The App live link is: [https://insider-trading-analysis.herokuapp.com/](https://
   - Supports numerical operations on large, multi-dimensional arrays.
   - Example: Calculating statistical measures like mean and standard deviation.
 
-- **Scikit-Learn**
+- **Scikit-Learn and XGBOOST**
   - Provides tools for data mining and data analysis.
   - Example:
     - Implementing regression models (Linear Regression, Random Forest Regressor).
@@ -537,44 +442,31 @@ The App live link is: [https://insider-trading-analysis.herokuapp.com/](https://
 
 - **Plotly**
   - Enables creation of interactive visualisations.
-  - Example: Building interactive charts in the Streamlit dashboard.
+  - Example: Building interactive charts dashboard.
 
-- **Streamlit**
+- **Dash Plotly**
   - An open-source app framework for machine learning and data science.
   - Example: Developing the user interface and interactive elements of the dashboard.
-
-- **Requests**
-  - Used for making HTTP requests to access APIs.
-  - Example: Fetching data from financial APIs if needed.
-
-- **Statsmodels**
-  - Provides classes and functions for the estimation of statistical models.
-  - Example: Conducting hypothesis testing, performing time-series analysis.
-
 ---
 
-## Credits
 
-**Content**
-- **Data Sources:**
-  - Insider Trading Data: Sourced from the SEC EDGAR Database.
-  - Financial Data: Collected from company financial statements and public records(kaggle).
-  - Stock Price Data: Retrieved from financial data providers(kaggle).
 
-- **Documentation and Tutorials:**
-  - Machine learning implementations referenced from the Scikit-Learn documentation.
-  - Streamlit app development guided by the Streamlit documentation.
+## Commit Messages Prefixes
+1. **feat:** A new feature or functionality.
+   - Example: `feat: add data preprocessing step`
+   
+2. **fix:** A bug fix or correction.
+   - Example: `fix: resolve data loading error`
+   
+3. **docs:** Documentation changes or updates.
+   - Example: `docs: update README with usage instructions`
+   
+5. **refactor:** Code changes that neither fix a bug nor add a feature but improve structure.
+   - Example: `refactor: simplify model training code`
+   
+7. **chore:** Routine tasks that are not related to code (e.g., updates to dependencies).
+   - Example: `chore: update project dependencies`
 
-- **Code Snippets:**
-  - Data processing methods inspired by examples from the Pandas and NumPy documentation.
-  - Visualisation techniques adapted from Matplotlib, Seaborn, and Plotly examples.
-
-**Media**
-- **Icons and Images:**
-  - Icons used in the dashboard are from Font Awesome.
-  - Stock images used are sourced from Unsplash and Pexels, which provide free-to-use images.
-
----
 
 ## Acknowledgements
 - **Instructors and Mentors:**
@@ -587,49 +479,4 @@ The App live link is: [https://insider-trading-analysis.herokuapp.com/](https://
   - Appreciation for the platforms (Kaggle & SEC) offering access to financial and market data, enabling the creation of this application.
 
 ---
-
-## Commit Messages Prefixes
-1. **feat:** A new feature or functionality.
-   - Example: `feat: add data preprocessing step`
-   
-2. **fix:** A bug fix or correction.
-   - Example: `fix: resolve data loading error`
-   
-3. **docs:** Documentation changes or updates.
-   - Example: `docs: update README with usage instructions`
-   
-4. **style:** Changes that do not affect the logic (e.g., formatting).
-   - Example: `style: adjusts UI screen layout`
-   
-5. **refactor:** Code changes that neither fix a bug nor add a feature but improve structure.
-   - Example: `refactor: simplify model training code`
-   
-6. **test:** Adding or modifying tests.
-   - Example: `test: add unit tests for data validation`
-   
-7. **chore:** Routine tasks that are not related to code (e.g., updates to dependencies).
-   - Example: `chore: update project dependencies`
-
-8. **perf:** A performance improvement.
-   - Example: `perf: optimize data loading speed`
-   
-9. **ci:** Changes related to continuous integration.
-   - Example: `ci: update CI configuration for testing`
-   
-10. **build:** Changes that affect the build system or external dependencies.
-    - Example: `build: update Dockerfile for new libraries`
-    
-11. **revert:** Reverting a previous commit.
-    - Example: `revert: undo changes from commit 1234567`
-    
-12. **config:** Changes to configuration files.
-    - Example: `config: update model hyperparameters`
-    
-13. **init:** Initial commit for setting up the project.
-    - Example: `init: create initial project structure`
-    
-14. **example:** Adding examples or demo files.
-    - Example: `example: add demo notebook for model usage`
-
-This README provides a comprehensive overview of the Insider Trading Analysis and Prediction Platform, integrating detailed information about datasets, variables, and data structures based on the collected data. It serves as a guiding document for stakeholders and contributors involved in the project.
 
