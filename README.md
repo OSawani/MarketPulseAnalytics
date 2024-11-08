@@ -6,7 +6,7 @@
   - [1. Insider Trading Data Set](#1-insider-trading-data-set)
   - [2. Stock Price Data](#2-stock-price-data)
 - [Hypotheses](#hypotheses-and-how-to-validate)
-- [Dashboard Design](#dashboard-design)
+- [GUI](#Dash-Plotly)
 - [Deployment](#deployment)
 - [Main Data Analysis and Machine Learning Libraries](#main-data-analysis-and-machine-learning-libraries)
 - [Commit Messages Prefixes](#commit-messages-prefixes)
@@ -238,11 +238,13 @@ Each .txt file represents a company's stock price data over a period.
 
 ---
 
-## Dashboard Design
+## GUI
 
-The dashboard will consist of 3 main pages. All of them share a similar layout.
-For Notebook 0.3 and 0.5, the user selects a date range and then the backend predicts the last 20% of the date period.
+Three different Dash-Plotly interactive web apps were designed. All of them share a similar layout.
+For Notebook 3.0 and 5.0, the user selects a date range and then the backend predicts the last 20% of the date period.
 The user can select stocks from different companies and get predictions accordingly for various metrics. RMSE, MAPE, and R2 will be reported along with features importance.
+Notebook 3.0 will only show the last 20% of the date range, while Notebook 5.0 will show the entire date range and the last 20% for predictions.
+The metrics reported on the web apps are for the last 20% of the date range.
 
 1. **Notebook 1.0**
    - **Content:**
