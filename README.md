@@ -244,19 +244,19 @@ The dashboard will consist of 3 main pages. All of them share a similar layout.
 For Notebook 0.3 and 0.5, the user selects a date range and then the backend predicts the last 20% of the date period.
 The user can select stocks from different companies and get predictions accordingly for various metrics. RMSE, MAPE, and R2 will be reported along with features importance.
 
-1. **Notebook 0.1**
+1. **Notebook 1.0**
    - **Content:**
      - A visualization of various data points related to stocks and insiders datasets.
      - Allows the user to explore different scenarios and identify patterns/trends.
    - **Related Hypotheses:**
      - Hypothesis 2 can be seen by playing around with the filtering criteria and observing the 'Volume' target variable RMSE and R2 score on The delta subplot.
-2. **Notebook 0.3**
+2. **Notebook 3.0**
    - **Content:**
      - A visualization of future predictions based on the given date range.
      - From the date range, the most recent 20% datapoints will simulate future predictions and show the actual values at the same time.
    - **Related Hypotheses:**
      - Hypothesis 1.
-3. **Notebook0.5**
+3. **Notebook5.0**
    - **Content:**
      - A visualization of future predictions based on the given date range.
      - From the date range, the most recent 20% datapoints will simulate future predictions and show the actual values at the same time.
