@@ -1,1 +1,1 @@
-web: gunicorn src.web_dash_plotly_apps.index:server
+web: python app.py

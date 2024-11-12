@@ -1,17 +1,12 @@
 # Plotting/ Web Apps
 matplotlib
-seaborn
 plotly
-bokeh
-streamlit
-altair<5
 dash
 dash-bootstrap-components
+ipykernel
 
 # Data fetching and parsing
 kaggle==1.5.12
-requests
-beautifulsoup4
 
 # Machine learning essentials
 scikit-learn
