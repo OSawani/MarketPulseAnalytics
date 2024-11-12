@@ -10,9 +10,16 @@ cloudinary_python.txt
 kaggle.json
 
 # Data files
-data/raw/*
+data/raw/stock_prices*
 data/interim/*
 data/processed/*
+
+# Ignore everything in raw/insider_transactions
+data/raw/insider_transactions/*
+# But do not ignore the "downloaded" folder inside raw/insider_transactions
+!data/raw/insider_transactions/downloaded/
+
+
 
 # Models
 models/*
