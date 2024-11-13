@@ -404,10 +404,6 @@ def launch_stocks_insiders_exploration_app():
 
         return fig_stock_prices, fig_insiders_trading, main_div_style, symbol_style, column_style, date_range_style, symbol2_style, date_range2_style
 
-    # Set the port from the environment variable, default to 8080 if not set
-    port = int(os.environ.get('PORT', 8080))
-
-    # Run the server
-    app.run_server(debug=False, port=port, host='0.0.0.0')
+    app.run_server(debug=True, port=32333)
 
 launch_stocks_insiders_exploration_app()

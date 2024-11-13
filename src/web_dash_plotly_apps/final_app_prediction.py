@@ -18,12 +18,14 @@ from sklearn.metrics import r2_score
 # from sklearn.metrics import mean_squared_error# deprecated
 from sklearn.metrics import root_mean_squared_error,make_scorer,mean_absolute_percentage_error# alternative
 
-from app import app 
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 import xgboost as xgb
 from datetime import timedelta
+
+app = Dash('Stocks & Insiders Predictions App', external_stylesheets=[dbc.themes.BOOTSTRAP])
+
 
 def extract_date_features(df):
     df = df.copy()
@@ -377,128 +379,136 @@ def predict_stock_prices(df_stock_prices, symbol, date_start, date_end,y_predict
     
     return fig
 
+
 # the function below will take the figure returned by the predict_stock_prices function and display it in the dash app
 
-    
+def launch_predictions_app():    
     # Initialize the Dash app with Bootstrap
-    # app = Dash('Stocks & Insiders Predictions App', external_stylesheets=[dbc.themes.BOOTSTRAP])
+    app = Dash('Stocks & Insiders Predictions App', external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-# Define the app layout
-layout = html.Div([
-    dbc.Container([
-        html.H1("Stocks & Insiders Predictions", className='text-center mb-4'),
-        dbc.Row([
-            # Left Column: Stocks Layout
-            dbc.Col([
-                html.H4("Stock Prices Controls"),
-                dbc.Row([
-                    dbc.Col([
-                        html.Label("Choose a symbol:"),
-                        dcc.Dropdown(
-                            id='predict-symbol',
-                            options=[{'label': i, 'value': i} for i in df_stock_prices['SYMBOL'].unique()],
-                            value='AAPL',
-                            clearable=False,
-                            style={'backgroundColor': '#ffffff', 'color': 'black'}  
-                        ),
-                    ], width=6),
-                    dbc.Col([
-                        html.Label("Choose a column:"),
-                        dcc.Dropdown(
-                            id='predict-column',
-                            options=[
-                                {'label': 'Low', 'value': 'Low'},
-                                {'label': 'High', 'value': 'High'},
-                                {'label': 'Close', 'value': 'Close'},
-                                {'label': 'Open', 'value': 'Open'}
-                            ],
-                            value='Low',
-                            clearable=False,
-                            style={'backgroundColor': '#ffffff', 'color': 'black'}  
-                        ),
-                    ], width=6),
-                ]),
-                dbc.Row([
-                    dbc.Col([
-                        html.Label("Choose a date range:"),
-                    ], width=2),
-                    dbc.Col([
-                        dcc.DatePickerRange(
-                            id='predict-date_range',
-                            start_date=df_stock_prices[df_stock_prices['Date'].dt.year == 2014]['Date'].min(),
-                            end_date=df_stock_prices[df_stock_prices['Date'].dt.year == 2014]['Date'].max(),
-                            style={'backgroundColor': '#ffffff', 'color': 'black'} 
-                        ),
-                    ], width=4),
-                    dbc.Col([
-                        dcc.Checklist(
-                            id='predict-theme-toggle',
-                            options=[
-                                {'label': 'Dark Mode', 'value': 'dark'}
-                            ],
-                            value=[]
-                        ),
-                    ], width=3)
-                ]),
-                dcc.Graph(id='predict-stock_prices', config={'responsive': True})
-            ], width=12, lg=6,style={'padding': '0px', 'width': '100%'}),
-        ],justify='center',style={'padding': '0px', 'width': '100%'})
-    ], fluid=True)
-], id='predict-main-div', style={'padding': '0px', 'width': '100%','backgroundColor': '#f8f9fa'})  # Light mode default
+    # Define the app layout
+    app.layout = html.Div([
+        dbc.Container([
+            html.H1("Stocks & Insiders Predictions", className='text-center mb-4'),
+            dbc.Row([
+                # Left Column: Stocks Layout
+                dbc.Col([
+                    html.H4("Stock Prices Controls"),
+                    dbc.Row([
+                        dbc.Col([
+                            html.Label("Choose a symbol:"),
+                            dcc.Dropdown(
+                                id='symbol',
+                                options=[{'label': i, 'value': i} for i in df_stock_prices['SYMBOL'].unique()],
+                                value='AAPL',
+                                clearable=False,
+                                style={'backgroundColor': '#ffffff', 'color': 'black'}  
+                            ),
+                        ], width=6),
+                        dbc.Col([
+                            html.Label("Choose a column:"),
+                            dcc.Dropdown(
+                                id='column',
+                                options=[
+                                    {'label': 'Low', 'value': 'Low'},
+                                    {'label': 'High', 'value': 'High'},
+                                    {'label': 'Close', 'value': 'Close'},
+                                    {'label': 'Open', 'value': 'Open'}
+                                ],
+                                value='Low',
+                                clearable=False,
+                                style={'backgroundColor': '#ffffff', 'color': 'black'}  
+                            ),
+                        ], width=6),
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                            html.Label("Choose a date range:"),
+                        ], width=2),
+                        dbc.Col([
+                            dcc.DatePickerRange(
+                                id='date_range',
+                                start_date=df_stock_prices[df_stock_prices['Date'].dt.year == 2014]['Date'].min(),
+                                end_date=df_stock_prices[df_stock_prices['Date'].dt.year == 2014]['Date'].max(),
+                                style={'backgroundColor': '#ffffff', 'color': 'black'} 
+                            ),
+                        ], width=4),
+                        dbc.Col([
+                            dcc.Checklist(
+                                id='theme-toggle',
+                                options=[
+                                    {'label': 'Dark Mode', 'value': 'dark'}
+                                ],
+                                value=[]
+                            ),
+                        ], width=3)
+                    ]),
+                    dcc.Graph(id='stock_prices', config={'responsive': True})
+                ], width=12, lg=6,style={'padding': '0px', 'width': '100%'}),
+            ],justify='center',style={'padding': '0px', 'width': '100%'})
+        ], fluid=True)
+    ], id='main-div', style={'padding': '0px', 'width': '100%','backgroundColor': '#f8f9fa'})  # Light mode default
 
-# Define a function to style components based on theme
-def get_component_style(theme):
-    if False:#'dark' in theme:
-        return {
-            'backgroundColor': '#2c2c2c',  # Dark background for dropdowns and date pickers
-            'color': 'red',
-            'border': '1px solid #444444',
-        }
-    else:
-        return {
-            'backgroundColor': '#E7E0E0',  # Light background for dropdowns and date pickers
-            'color': 'black',
-            'border': '1px solid #cccccc',
-        }
-
-
-@app.callback(
-    Output('predict-stock_prices', 'figure'),
-    Output('predict-main-div', 'style'),
-    Output('predict-symbol', 'style'),  
-    Output('predict-column', 'style'),  
-    Output('predict-date_range', 'style'),  
-    [Input('predict-symbol', 'value'),
-    Input('predict-column', 'value'),
-    Input('predict-date_range', 'start_date'),
-    Input('predict-date_range', 'end_date'),
-    Input('predict-theme-toggle', 'value')]
-)
+    # Define a function to style components based on theme
+    def get_component_style(theme):
+        if False:#'dark' in theme:
+            return {
+                'backgroundColor': '#2c2c2c',  # Dark background for dropdowns and date pickers
+                'color': 'red',
+                'border': '1px solid #444444',
+            }
+        else:
+            return {
+                'backgroundColor': '#E7E0E0',  # Light background for dropdowns and date pickers
+                'color': 'black',
+                'border': '1px solid #cccccc',
+            }
 
 
-def update_figure(symbol, column, start_date1, end_date1, theme):
+    @app.callback(
+        Output('stock_prices', 'figure'),
+        Output('main-div', 'style'),
+        Output('symbol', 'style'),  
+        Output('column', 'style'),  
+        Output('date_range', 'style'),  
+        [Input('symbol', 'value'),
+        Input('column', 'value'),
+        Input('date_range', 'start_date'),
+        Input('date_range', 'end_date'),
+        Input('theme-toggle', 'value')]
+    )
 
-    dropdown_style = get_component_style(theme)
 
-    # Determine theme styles
-    if 'dark' in theme:
-        main_div_style = {'backgroundColor': '#2c2c2c', 'color': 'white'}
-    else:
-        main_div_style = {'backgroundColor': '#f8f9fa', 'color': 'black'}
+    def update_figure(symbol, column, start_date1, end_date1, theme):
+    
+        dropdown_style = get_component_style(theme)
 
-    # Get styles for each component
-    symbol_style = dropdown_style
-    column_style = dropdown_style
-    date_range_style = dropdown_style
-    # only if date start and end are not valid we do the rest of the code else return  without doing anything
-    if start_date1>end_date1:
-        temp=start_date1
-        start_date1=end_date1
-        end_date1=temp
-    fig_stock_prices = predict_stock_prices(df_stock_prices, symbol, start_date1, end_date1, column)
-    fig_stock_prices.update_layout(
-        plot_bgcolor=main_div_style['backgroundColor'],
-        paper_bgcolor=main_div_style['backgroundColor'],
-        font=dict(color=main_div_style['color'])
-        )
-    return fig_stock_prices,main_div_style, symbol_style, column_style, date_range_style
+        # Determine theme styles
+        if 'dark' in theme:
+            main_div_style = {'backgroundColor': '#2c2c2c', 'color': 'white'}
+        else:
+            main_div_style = {'backgroundColor': '#f8f9fa', 'color': 'black'}
+
+        # Get styles for each component
+        symbol_style = dropdown_style
+        column_style = dropdown_style
+        date_range_style = dropdown_style
+        # only if date start and end are not valid we do the rest of the code else return  without doing anything
+        if start_date1>end_date1:
+            temp=start_date1
+            start_date1=end_date1
+            end_date1=temp
+        fig_stock_prices = predict_stock_prices(df_stock_prices, symbol, start_date1, end_date1, column)
+        fig_stock_prices.update_layout(
+            plot_bgcolor=main_div_style['backgroundColor'],
+            paper_bgcolor=main_div_style['backgroundColor'],
+            font=dict(color=main_div_style['color'])
+            )
+        return fig_stock_prices,main_div_style, symbol_style, column_style, date_range_style
+    # Run the app
+    # Run the app
+    app.run_server(debug=True, port=32335)
+
+
+
+launch_predictions_app()

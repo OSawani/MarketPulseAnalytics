@@ -1,1 +1,1 @@
-web: python app.py
+web: python src/web_dash_plotly_apps/data_exploration_app.py
