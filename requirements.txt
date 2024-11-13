@@ -13,7 +13,6 @@ scikit-learn
 numpy
 pandas
 xgboost
-nvidia_nccl_cu12==0
 
 
 # others
