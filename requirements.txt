@@ -12,7 +12,7 @@ kaggle==1.5.12
 scikit-learn
 numpy
 pandas
-xgboost
+xgboost==1.5.2
 
 
 # others
