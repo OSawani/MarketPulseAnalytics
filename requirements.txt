@@ -11,9 +11,10 @@ kaggle==1.5.12
 # Machine learning essentials
 scikit-learn
 numpy
-scipy
 pandas
 xgboost
+nvidia_nccl_cu12==0
+
 
 # others
 nbformat

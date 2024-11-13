@@ -1,117 +1,171 @@
 # app.py
-from dash import Dash
+from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import os
 from dotenv import load_dotenv
 import zipfile
 import shutil
 
+# Data preparation imports
+import subprocess
+import pandas as pd
+import numpy as np
 
-# Change working directory
-current_dir = os.getcwd()
-current_dir
-os.chdir(os.path.dirname(current_dir))
-# print("You set a new current directory")
+# Importing layouts from other files
+from data_exploration_app import layout as exploration_layout
+from final_app_prediction import layout as prediction_layout
 
-
-
-# Kaggle credintials will be read from Heroku in production
-
-
-
-# Set Kaggle directory
-os.environ['KAGGLE_CONFIG_DIR'] = os.getcwd()
-
-
-
-
-# Download the dataset: setting download paths
-KaggleDatasetPath = "borismarjanovic/price-volume-data-for-all-us-stocks-etfs"
-DestinationFolder = "data/downloaded/stock_prices"
-# Make sure the destination folder exists
-os.makedirs(DestinationFolder, exist_ok=True)
-# Check if the dataset zip file already exists
-if not os.path.exists():
-    # If the zip file doesn't exist, download it using Kaggle API
-    print(f"Dataset not found. Downloading {KaggleDatasetPath}...")
-    os.system(f"kaggle datasets download -d {KaggleDatasetPath} -p {DestinationFolder}")
-else:
-    # If the zip file exists, skip the download
-    print(f"Dataset already exists at {DestinationFolder, "price-volume-data-for-all-us-stocks-etfs.zip"}. Skipping download.")
-
-
-
-# Unzip the downloaded dataset
-# Path to the downloaded ZIP file
-zip_file_path = os.path.join(DestinationFolder, "price-volume-data-for-all-us-stocks-etfs.zip")
-
-# Unzip the dataset
-with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-    zip_ref.extractall(DestinationFolder)
-# Define paths for ETFs folder, Stocks folder, and target folder
-etfs_folder = os.path.join(DestinationFolder, "ETFs")
-stocks_folder = os.path.join(DestinationFolder, "Stocks")
-target_folder = os.path.join("data", "raw", "stock_prices")
-# Delete the ETFs folder if it exists
-if os.path.exists(etfs_folder):
-    shutil.rmtree(etfs_folder)
-# Move the content of the "Stocks" folder to the target "stock_prices" folder
-if os.path.exists(stocks_folder):
-    for file_name in os.listdir(stocks_folder):
-        src_file = os.path.join(stocks_folder, file_name)
-        dest_file = os.path.join(target_folder, file_name)
-        
-        # Check if the destination file already exists
-        if os.path.exists(dest_file):
-            print(f"File {file_name} already exists in the target directory. Skipping.")
-        else:
-            shutil.move(src_file, dest_file)
-
-    # Remove the now-empty "Stocks" folder
-    shutil.rmtree(stocks_folder)
-# Delete the original ZIP file if it exists
-if os.path.exists(zip_file_path):
-    os.remove(zip_file_path)
-
-
-
-# Unzipping SEC Dataset
-# Define the project root by finding "MarketPulseAnalytics" within the directory structure
-current_dir = os.getcwd()
-# Navigate up to the "Repo" level, where "MarketPulseAnalytics" resides
-project_root = os.path.join(current_dir, "..", "MarketPulseAnalytics")
-# Change to the project root directory
-os.chdir(project_root)
-print("New current directory:", os.getcwd())
-# Define paths relative to the project root
-downloaded_folder = os.path.join("data", "downloaded", "zipped_insider_transactions")
-extracted_folder = os.path.join("data", "raw", "insider_transactions")
-# Ensure both the extracted folders exist
-os.makedirs(extracted_folder, exist_ok=True)
-# Check and list all ZIP files in the downloaded folder
-if not os.path.exists(downloaded_folder):
-    print(f"No folder named 'downloaded' found in {downloaded_folder}.")
-else:
-    zip_files = [f for f in os.listdir(downloaded_folder) if f.endswith('.zip')]
-    if not zip_files:
-        print("No ZIP files found in the downloaded folder.")
-    else:
-        # Process each ZIP file
-        for zip_file in zip_files:
-            zip_file_path = os.path.join(downloaded_folder, zip_file)
-            
-            # Create a new folder named after the ZIP file (without .zip) for extraction
-            zip_folder_name = os.path.splitext(zip_file)[0]
-            destination_folder = os.path.join(extracted_folder, zip_folder_name)
-            os.makedirs(destination_folder, exist_ok=True)
-            print(f"Extracting {zip_file} into {destination_folder}...")
-
-            # Extract the contents of the ZIP file
-            with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-                zip_ref.extractall(destination_folder)
-
-        print("All ZIP files have been extracted into their respective folders.")
-
-
+# Initialize the Dash app
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server  # Expose the server for deployment
+
+# Load environment variables from the .env file if it exists
+env_path = os.path.join(os.getcwd(), '.env')
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+    print(".env file loaded from:", env_path)
+else:
+    print("No .env file found. Ensure environment variables are set in the hosting environment.")
+
+# Access environment variables
+kaggle_username = os.getenv('KAGGLE_USERNAME')
+kaggle_key = os.getenv('KAGGLE_KEY')
+
+# Verify environment variables are set
+if not kaggle_username or not kaggle_key:
+    print("Warning: KAGGLE_USERNAME and/or KAGGLE_KEY environment variables are not set.")
+else:
+    print("Environment variables loaded successfully.")
+
+# Define paths for downloading and unzipping datasets
+stock_prices_download_path = 'data/downloaded/zip_stock_prices/'
+stock_prices_filename = "price-volume-data-for-all-us-stocks-etfs.zip"
+stock_prices_unzip_path = 'data/raw/stock_prices/'
+
+insider_transactions_download_path = 'data/downloaded/zip_insider_transactions/'
+insider_transactions_filename = 'sec-insider-transactions.zip'
+insider_transactions_unzip_path = 'data/raw/insider_transactions/'
+
+# Define dataset names for Kaggle CLI
+stock_prices_dataset = "borismarjanovic/price-volume-data-for-all-us-stocks-etfs"
+insider_transactions_dataset = "osawani/sec-insider-transactions"
+
+# Function to download the dataset using Kaggle CLI
+def download_dataset(dataset_name, download_path):
+    command = f"kaggle datasets download -d {dataset_name} -p {download_path}"
+    print(f"Running command: {command}")
+    os.system(command)
+    print(f"Dataset {dataset_name} downloaded successfully to {download_path}")
+
+# Function to check if the file exists in the folder and download it if it doesn't
+def check_and_download_file(folder_path, filename, dataset_name):
+    file_path = os.path.join(folder_path, filename)
+    if os.path.exists(file_path):
+        print(f"File {filename} already exists in {folder_path}")
+        return True  # File exists
+    else:
+        print(f"File {filename} does not exist in {folder_path}. Downloading now...")
+        download_dataset(dataset_name, folder_path)
+        return False  # File does not exist, download initiated
+
+# Function to unzip the Stock Prices dataset (only the 'Stocks' folder)
+def unzip_stock_prices(zip_path, unzip_path, specific_folder='Stocks'):
+    if not os.path.exists(zip_path):
+        print(f"Error: {zip_path} does not exist. Please download the zip file first.")
+        return
+
+    zip_dir = os.path.dirname(zip_path)
+    print(f"Unzipping {zip_path} to {zip_dir}...")
+
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        all_files = zip_ref.namelist()
+        files_to_extract = [file for file in all_files if file.startswith(specific_folder)]
+        
+        for file in files_to_extract:
+            zip_ref.extract(file, zip_dir)
+
+    stocks_folder_path = os.path.join(zip_dir, specific_folder)
+    if os.path.exists(stocks_folder_path):
+        for item in os.listdir(stocks_folder_path):
+            source = os.path.join(stocks_folder_path, item)
+            destination = os.path.join(unzip_path, item)
+            if os.path.isdir(source):
+                shutil.move(source, destination)
+            else:
+                shutil.move(source, destination)
+        
+        shutil.rmtree(stocks_folder_path)
+        print(f"Moved contents from '{stocks_folder_path}' to '{unzip_path}' and deleted the folder.")
+    else:
+        print(f"Error: The folder '{specific_folder}' was not found in the zip file.")
+
+    print(f"Unzipping complete. Files extracted and moved to {unzip_path}.")
+
+# Function to unzip the Insider Transactions dataset (extract everything)
+def unzip_insider_transactions(zip_path, unzip_path):
+    if not os.path.exists(zip_path):
+        print(f"Error: {zip_path} does not exist. Please download the zip file first.")
+        return
+
+    print(f"Unzipping {zip_path} to {unzip_path}...")
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(unzip_path)
+
+    print(f"Unzipping complete. Files extracted to {unzip_path}.")
+
+# Main process to check and download datasets, then unzip them
+def prepare_data():
+    # 1. Check and download the Stock Prices dataset if the file doesn't exist
+    check_and_download_file(stock_prices_download_path, stock_prices_filename, stock_prices_dataset)
+
+    # 2. Check and download the Insider Transactions dataset if the file doesn't exist
+    check_and_download_file(insider_transactions_download_path, insider_transactions_filename, insider_transactions_dataset)
+
+    # 3. Unzip the Stock Prices dataset (only the 'Stocks' folder)
+    zip_stock_prices_path = os.path.join(stock_prices_download_path, stock_prices_filename)
+    unzip_stock_prices(zip_stock_prices_path, stock_prices_unzip_path)
+
+    # 4. Unzip the Insider Transactions dataset (all contents)
+    zip_insider_transactions_path = os.path.join(insider_transactions_download_path, insider_transactions_filename)
+    unzip_insider_transactions(zip_insider_transactions_path, insider_transactions_unzip_path)
+
+    print("Download and extraction complete!")
+
+# Call the data preparation function when the app is initialized
+prepare_data()
+
+# Define the navigation bar
+navbar = dbc.NavbarSimple(
+    children=[
+        dbc.NavItem(dcc.Link("Data Exploration", href="/data_exploration", className="nav-link")),
+        dbc.NavItem(dcc.Link("Predictions", href="/predictions", className="nav-link")),
+    ],
+    brand="Stocks & Insiders App",
+    color="primary",
+    dark=True,
+)
+
+# Define the content placeholder
+content = html.Div(id="page-content")
+
+# Set up the app layout
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    navbar,
+    content
+])
+
+# Update page content based on the URL
+@app.callback(Output('page-content', 'children'),
+              Input('url', 'pathname'))
+def display_page(pathname):
+    if pathname == '/' or pathname == '/data_exploration':
+        return exploration_layout
+    elif pathname == '/predictions':
+        return prediction_layout
+    else:
+        return html.H1("404: Page not found", className='text-center')
+
+# Run the app server
+if __name__ == '__main__':
+    app.run_server(debug=False)  # Disabled debug mode for production
