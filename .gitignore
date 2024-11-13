@@ -10,11 +10,10 @@ cloudinary_python.txt
 kaggle.json
 
 # Data files
-data/raw/*
+data/raw/insider_transactions/*
+data/raw/stock_prices/*
 data/interim/*
 data/processed/*
-data/downloaded/stock_prices
-
 
 # Models
 models/*

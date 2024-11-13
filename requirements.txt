@@ -17,3 +17,4 @@ xgboost
 
 # others
 nbformat
+python-dotenv
