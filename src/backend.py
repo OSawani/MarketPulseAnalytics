@@ -15,9 +15,6 @@ import plotly.express as px
 import plotly.io as pio
 
 
-
-
-
 def extract_date_features(df):
     df = df.copy()
     df['Date'] = pd.to_datetime(df['Date'])
@@ -28,9 +25,6 @@ def extract_date_features(df):
     df['day_of_week'] = df['Date'].dt.dayofweek
     df['is_weekend'] = (df['day_of_week'] >= 5).astype(int)
     return df
-
-
-
 
 
 def predict_stock_prices(processed_df_stock_prices, symbol, date_start, date_end,y_predicted_target_desired='Low'):
@@ -358,4 +352,3 @@ def predict_stock_prices(processed_df_stock_prices, symbol, date_start, date_end
     # fig.show()
     
     return fig
-

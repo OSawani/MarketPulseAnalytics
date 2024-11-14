@@ -9,6 +9,7 @@ from shared_variables import interim_df_merged, interim_df_stock_prices, interim
 from backend import predict_stock_prices
 from frontend import exploration_layout, get_component_style, app_layout, prediction_layout
 
+
 # --------------------------------------------
 # --------------------------------------------
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -21,16 +22,11 @@ print("----------------------------\n")
 # --------------------------------------------
 
 
-
-
 # Initialize the Dash app
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = app_layout
 server = app.server  # Expose the server for deployment
 # --------------------------------------------
-
-
-
 
 
 # Update page content based on the URL
@@ -59,6 +55,8 @@ def display_page(pathname):
     Input('predict-date_range', 'end_date'),
     Input('predict-theme-toggle', 'value')]
 )
+
+
 def prediction_update_figure(symbol, column, start_date1, end_date1, theme):
 
     dropdown_style = get_component_style(theme)
@@ -85,6 +83,7 @@ def prediction_update_figure(symbol, column, start_date1, end_date1, theme):
         font=dict(color=main_div_style['color'])
         )
     return fig_stock_prices,main_div_style, symbol_style, column_style, date_range_style
+
 
 # --------------------------------------------
 @app.callback(
@@ -285,6 +284,7 @@ def exploration_update_figure(symbol, column, symbol2, start_date2, end_date2, s
 
     return fig_stock_prices, fig_insiders_trading, main_div_style, symbol_style, column_style, date_range_style, symbol2_style, date_range2_style
 # --------------------------------------------
+
 
 if __name__ == '__main__':
     app.run_server(debug=False, port=32335)  # Disabled debug mode for production

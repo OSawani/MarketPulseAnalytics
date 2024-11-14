@@ -6,6 +6,7 @@ import zipfile
 import shutil
 import requests
 
+
 def download_zip_file(url, download_path, filename):
     file_path = os.path.join(download_path, filename)
     
@@ -33,7 +34,6 @@ def download_zip_file(url, download_path, filename):
         # If the file exists, print a message
         print(f"File already exists: {file_path}")
         print("----------------------------\n")
-
 
 
 def unzip_stock_prices(zip_path, unzip_path, specific_folder='Stocks'):
@@ -97,7 +97,6 @@ def unzip_stock_prices(zip_path, unzip_path, specific_folder='Stocks'):
 
     print(f"\nUnzipping complete. Files extracted and moved to {unzip_path}.")
     print("----------------------------\n")
-
 
 
 def unzip_insider_transactions(zip_path, unzip_path):
@@ -191,6 +190,7 @@ def process_insider_transactions():
 
     return df
 
+
 def process_submissions():
     files = [os.path.join('data', 'raw', 'insider_transactions', f'{year}q{quarter}_form345', 'SUBMISSION.tsv')
              for year in range(2014, 2018) for quarter in range(1, 5)]
@@ -217,6 +217,7 @@ def process_submissions():
     df2.dropna(subset=['ISSUERTRADINGSYMBOL'], inplace=True)
     return df2
 
+
 def process_reporting_owner():
     files = [os.path.join('data', 'raw', 'insider_transactions', f'{year}q{quarter}_form345', 'REPORTINGOWNER.tsv')
              for year in range(2014, 2018) for quarter in range(1, 5)]
@@ -235,6 +236,7 @@ def process_reporting_owner():
     columns_to_keep = ['RPTOWNER_RELATIONSHIP', 'ACCESSION_NUMBER']
     df3 = df3[columns_to_keep].dropna(subset=['RPTOWNER_RELATIONSHIP'])
     return df3
+
 
 def process_stock_prices():
     files = [os.path.join('data', 'raw', 'stock_prices', filename) 
@@ -257,6 +259,7 @@ def process_stock_prices():
     df5 = pd.concat(dataframes, ignore_index=True)
     return df5
 
+
 def merge_data(df, df2, df3, df5):
     df4 = df.merge(df2, on='ACCESSION_NUMBER').merge(df3, on='ACCESSION_NUMBER')
     df4['ISSUERTRADINGSYMBOL'] = df4['ISSUERTRADINGSYMBOL'].str.upper()
@@ -264,6 +267,7 @@ def merge_data(df, df2, df3, df5):
     df4['TRANS_DATE'] = pd.to_datetime(df4['TRANS_DATE'], format='%d-%b-%Y').dt.strftime('%Y-%m-%d')
     merged_df = pd.merge(df4, df5, left_on=['ISSUERTRADINGSYMBOL', 'TRANS_DATE'], right_on=['SYMBOL', 'Date'], how='inner')
     return df4, df5, merged_df
+
 
 def save_interim_data(df4, df5, merged_df):
     insider_transactions_path = os.path.join('data', 'interim', 'insider_transactions')
@@ -277,6 +281,7 @@ def save_interim_data(df4, df5, merged_df):
     df4.to_csv(os.path.join(insider_transactions_path, 'interim_insider_transactions.csv'), index=False)
     df5.to_csv(os.path.join(stock_prices_path, 'interim_stock_prices.csv'), index=False)
     merged_df.to_csv(os.path.join(merged_path, 'interim_merged_insider_transactions_stock_prices.csv'), index=False)
+
 
 def extract_date_features(df):
     df = df.copy()
@@ -301,6 +306,7 @@ def clean_data(df):
         lambda x: 'Officer' if 'Officer' in x else x
     )
     return df
+
 
 def interim_further_processing(df_insider_transactions, df_stock_prices, df_merged):
         # Load and clean the merged dataframe
@@ -332,6 +338,7 @@ def interim_further_processing(df_insider_transactions, df_stock_prices, df_merg
         df_insider_transactions['Exists in Stock Prices'] = df_insider_transactions['Date_Symbol'].isin(date_symbol_set_stock_prices)
         
         return df_insider_transactions, df_stock_prices, df_merged
+
 
 def check_date_symbol(date, symbol):
     return (date, symbol) in date_symbol_set
@@ -621,7 +628,6 @@ def run_data_pipeline():
     create_save_processed_data()
     print("Dataset ETL successful.\n----------------------------")
 
+
 if __name__ == "__main__":
     run_data_pipeline()
-
-

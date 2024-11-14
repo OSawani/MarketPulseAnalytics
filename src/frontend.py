@@ -3,7 +3,6 @@ import dash_bootstrap_components as dbc
 from shared_variables import interim_df_merged, interim_df_stock_prices, interim_df_insider_transactions, processed_df_stock_prices
 
 
-
 def get_component_style(theme):
     if False:#'dark' in theme:
         return {
@@ -17,7 +16,6 @@ def get_component_style(theme):
             'color': 'black',
             'border': '1px solid #cccccc',
         }
-
 
 
 exploration_layout = html.Div([
@@ -193,8 +191,10 @@ navbar = dbc.NavbarSimple(
     dark=True,
 )
 
+
 # Define the content placeholder
 content = html.Div(id="page-content")
+
 
 # Set up the app layout
 app_layout = html.Div([
