@@ -403,8 +403,6 @@ def create_save_processed_data():
         print("CSV processed already exist")
     else:
         # Proceed with processing
-        # ...existing code...
-
         # Load interim data
         insider_transactions_path = os.path.join(
             'data', 'interim', 'insider_transactions', 'interim_insider_transactions.csv'
@@ -420,20 +418,150 @@ def create_save_processed_data():
         df_insider_transactions = pd.read_csv(insider_transactions_path)
         df_stock_prices = pd.read_csv(stock_prices_path)
         df_merged = pd.read_csv(merged_path)
+
+
+        df_merged = clean_data(df_merged)
+        df_merged['TRANS_DATE'] = pd.to_datetime(df_merged['TRANS_DATE'])
+        # sort the dataframe by TRANS_DATE
+        df_merged = df_merged.sort_values(['TRANS_DATE'])
+        df_merged['TransactionValue'] = df_merged['TRANS_PRICEPERSHARE'] * df_merged['TRANS_SHARES']
+        # Precompute a set of (Date, Symbol) tuples for faster lookup
+        df_merged['Date_Symbol'] = df_merged['TRANS_DATE'].dt.strftime('%Y-%m-%d') + '_' + df_merged['SYMBOL']
+        date_symbol_set = set(df_merged['Date_Symbol'])
+        
+
+
         current_step += 1
         print(f"Processed data saving: {(current_step / total_steps) * 100:.2f}% complete")
-        # ...processing steps...
+
+        
+        df_insider_transactions = clean_data(df_insider_transactions)
+        df_insider_transactions['TRANS_DATE'] = pd.to_datetime(df_insider_transactions['TRANS_DATE'])
+        # sort the dataframe by TRANS_DATE
+        df_insider_transactions = df_insider_transactions.sort_values(['TRANS_DATE'])
+        df_insider_transactions['TransactionValue'] = df_insider_transactions['TRANS_PRICEPERSHARE'] * df_insider_transactions['TRANS_SHARES']
+        # Vectorized check for 'Exists in Stock Prices'
+        df_insider_transactions['Date_Symbol'] = df_insider_transactions['TRANS_DATE'].dt.strftime('%Y-%m-%d') + '_' + df_insider_transactions['ISSUERTRADINGSYMBOL']
+        df_insider_transactions['Exists in Stock Prices'] = df_insider_transactions['Date_Symbol'].isin(date_symbol_set)
+        # rename ISSUERTRADINGSYMBOL to SYMBOL
+        df_insider_transactions.rename(columns={'ISSUERTRADINGSYMBOL': 'SYMBOL'}, inplace=True)
+        # Add lag features for 1, 3, and 7 days for TRANS_SHARES, TRANS_PRICEPERSHARE, and TransactionValue
+        # not actual last date 7 days ago but rather,last 7 data points
+        # Add lag features for 7 and 21 days for TRANS_SHARES and TRANS_PRICEPERSHARE per SYMBOL
+        lags = [7, 21]
+        for lag in lags:
+            df_insider_transactions[f'TRANS_SHARES_Lag{lag}'] = df_insider_transactions.groupby('SYMBOL')['TRANS_SHARES'].shift(lag)
+            df_insider_transactions[f'TRANS_PRICEPERSHARE_Lag{lag}'] = df_insider_transactions.groupby('SYMBOL')['TRANS_PRICEPERSHARE'].shift(lag)
+        # Add moving average features for 7-day and 21-day periods for TransactionValue per SYMBOL
+        moving_averages = [7, 21]
+        for window in moving_averages:
+            df_insider_transactions[f'TransactionValue_MA{window}'] = (
+                df_insider_transactions.groupby('SYMBOL')['TransactionValue']
+                .transform(lambda x: x.rolling(window=window, min_periods=1).mean())
+            )
         current_step += 1
         print(f"Processed data saving: {(current_step / total_steps) * 100:.2f}% complete")
-        # Save processed data
+
+        df_stock_prices.loc[df_stock_prices['Low'] < 0, 'Low'] = df_stock_prices.loc[df_stock_prices['Low'] < 0, 'Open']
+        df_stock_prices['Date'] = pd.to_datetime(df_stock_prices['Date'])
+        df_stock_prices = df_stock_prices.sort_values(['Date'])
+        df_stock_prices['DateNumeric'] = (df_stock_prices['Date'] - df_stock_prices['Date'].min()).dt.days
+        df_stock_prices['MeanTotalValue'] = df_stock_prices['Volume'] * df_stock_prices[['Low', 'High', 'Open', 'Close']].mean(axis=1)
+        # Add lag features for 1, 3, and 7 days for Open, Close, High, Low, and Volume
+        # Add lag features for 1, 3, and 7 days for Open, Close, High, Low, and Volume per symbol
+        lags = [1, 3, 7]
+        grouped = df_stock_prices.groupby('SYMBOL')
+        for lag in lags:
+            df_stock_prices[f'Open_Lag{lag}'] = grouped['Open'].shift(lag)
+            df_stock_prices[f'Close_Lag{lag}'] = grouped['Close'].shift(lag)
+            df_stock_prices[f'High_Lag{lag}'] = grouped['High'].shift(lag)
+            df_stock_prices[f'Low_Lag{lag}'] = grouped['Low'].shift(lag)
+            df_stock_prices[f'Volume_Lag{lag}'] = grouped['Volume'].shift(lag)
+        # Add moving average features for 3-day and 7-day periods for Open, Close, High, Low, and Volume
+        # Add moving average features for 3-day and 7-day periods for Open, Close, High, Low, Volume, and MeanTotalValue per symbol
+        moving_averages = [3, 7]
+        for window in moving_averages:
+            df_stock_prices[f'Open_MA{window}'] = grouped['Open'].rolling(window=window, min_periods=1).mean().reset_index(level=0, drop=True)
+            df_stock_prices[f'Close_MA{window}'] = grouped['Close'].rolling(window=window, min_periods=1).mean().reset_index(level=0, drop=True)
+            df_stock_prices[f'High_MA{window}'] = grouped['High'].rolling(window=window, min_periods=1).mean().reset_index(level=0, drop=True)
+            df_stock_prices[f'Low_MA{window}'] = grouped['Low'].rolling(window=window, min_periods=1).mean().reset_index(level=0, drop=True)
+            df_stock_prices[f'Volume_MA{window}'] = grouped['Volume'].rolling(window=window, min_periods=1).mean().reset_index(level=0, drop=True)
+            df_stock_prices[f'MeanTotalValue_MA{window}'] = grouped['MeanTotalValue'].rolling(window=window, min_periods=1).mean().reset_index(level=0, drop=True)
+
+        # Vectorized check for 'Exists in Insiders' ( much faster search than using .apply() )
+        df_stock_prices['Date_Symbol'] = df_stock_prices['Date'].dt.strftime('%Y-%m-%d') + '_' + df_stock_prices['SYMBOL']
+        df_stock_prices['Exists in Insiders'] = df_stock_prices['Date_Symbol'].isin(date_symbol_set)# date_symbol_set set that contains common dates && symbols in both insider_transactions and stock_prices
+
+
+        # Perform merge_asof with a 7-day tolerance
+        df_stock_prices = pd.merge_asof(
+            df_stock_prices,
+            df_merged[['TRANS_DATE', 'SYMBOL']],
+            by='SYMBOL',
+            left_on='Date',
+            right_on='TRANS_DATE',
+            direction='backward',
+            tolerance=pd.Timedelta('7D')
+        )
+        # Create flag column
+        df_stock_prices['InsiderTransactionInLast7Days'] = df_stock_prices['TRANS_DATE'].notnull()
+        # Drop 'TRANS_DATE' column if not needed
+        df_stock_prices = df_stock_prices.drop(columns=['TRANS_DATE'])
+        # we do same thing for 21 days
+        df_stock_prices = pd.merge_asof(
+            df_stock_prices,
+            df_merged[['TRANS_DATE', 'SYMBOL']],
+            by='SYMBOL',
+            left_on='Date',
+            right_on='TRANS_DATE',
+            direction='backward',
+            tolerance=pd.Timedelta('21D')
+        )
+        # Create flag column
+        df_stock_prices['InsiderTransactionInLast21Days'] = df_stock_prices['TRANS_DATE'].notnull()
+        # Drop 'TRANS_DATE' column
+        df_stock_prices = df_stock_prices.drop(columns=['TRANS_DATE'])
+        # find the row with same date and symbol in df_merged or the closest date 
+        # once the date is found, we use df_insider_transactions to get:
+        # and add the TransactionValue_MA7, TRANS_PRICEPERSHARE_Lag7,TRANS_SHARES_Lag7, TransactionValue_MA21, TRANS_PRICEPERSHARE_Lag21,TRANS_SHARES_Lag21
+        # Prepare df_insider_transactions with the required columns
+        insider_cols = [
+            'SYMBOL',
+            'TRANS_DATE',
+            'TransactionValue_MA7', 'TRANS_PRICEPERSHARE_Lag7', 'TRANS_SHARES_Lag7',
+            'TransactionValue_MA21', 'TRANS_PRICEPERSHARE_Lag21', 'TRANS_SHARES_Lag21'
+        ]
+        # Perform merge_asof to get the nearest prior insider transaction for each stock
+        df_stock_prices = pd.merge_asof(
+            df_stock_prices,
+            df_insider_transactions[insider_cols],
+            left_on='Date',
+            right_on='TRANS_DATE',
+            by='SYMBOL',
+            direction='backward'
+        )
+        # Prefix the insider columns and drop the originals
+        insider_columns = [
+            'TransactionValue_MA7', 'TRANS_PRICEPERSHARE_Lag7', 'TRANS_SHARES_Lag7',
+            'TransactionValue_MA21', 'TRANS_PRICEPERSHARE_Lag21', 'TRANS_SHARES_Lag21'
+        ]
+        for col in insider_columns:
+            df_stock_prices['insider_' + col] = df_stock_prices[col]
+            df_stock_prices.drop(columns=col, inplace=True)
+        # Drop 'TRANS_DATE' 
+        df_stock_prices.drop(columns='TRANS_DATE', inplace=True)
+
         os.makedirs(insider_transactions_folder, exist_ok=True)
         os.makedirs(stock_prices_folder, exist_ok=True)
         os.makedirs(merged_folder, exist_ok=True)
         df_insider_transactions.to_csv(insider_transactions_file, index=False)
         df_stock_prices.to_csv(stock_prices_file, index=False)
         df_merged.to_csv(merged_file, index=False)
+        
+        
         current_step += 1
         print(f"Processed data saving: {(current_step / total_steps) * 100:.2f}% complete")
+        
         print("CSV processed saved successfully.")
     print("----------------------------\n")
 
