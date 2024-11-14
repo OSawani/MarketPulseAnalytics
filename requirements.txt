@@ -13,3 +13,4 @@ pandas
 xgboost==1.5.2
 # others
 nbformat
+gunicorn
