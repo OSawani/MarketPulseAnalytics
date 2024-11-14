@@ -4,17 +4,12 @@ plotly
 dash
 dash-bootstrap-components
 ipykernel
-
-# Data fetching and parsing
-kaggle==1.5.12
-
+# Dataset fetching from url
+requests
 # Machine learning essentials
 scikit-learn
 numpy
 pandas
 xgboost==1.5.2
-
-
 # others
 nbformat
-python-dotenv
