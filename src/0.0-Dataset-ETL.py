@@ -443,7 +443,7 @@ def run_data_pipeline():
     # get the directory of the current file and not the terminal directory
     current_dir = os.path.dirname(os.path.realpath(__file__))
     print("datapipeline script directory: ", current_dir)
-    if current_dir.endswith('notebooks'):
+    if current_dir.endswith('src'):
         # go one directory up from the current directory
         os.chdir(os.path.dirname(current_dir))
         print("datapipeline script new current directory to: ", os.getcwd())
