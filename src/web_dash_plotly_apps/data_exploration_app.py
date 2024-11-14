@@ -411,3 +411,4 @@ def launch_stocks_insiders_exploration_app():
     app.run_server(debug=False, port=port, host='0.0.0.0')
 
 launch_stocks_insiders_exploration_app()
+
