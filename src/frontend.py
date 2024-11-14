@@ -55,23 +55,19 @@ exploration_layout = html.Div([
                     ], width=6),
                 ]),
                 dbc.Row([
-                    dbc.Col([
-                        html.Label("Choose a date range:"),
-                    ], width=2),
+                    dbc.Col([html.Label("Choose a date range:")], width=2),
                     dbc.Col([
                         dcc.DatePickerRange(
                             id='explore-date_range',
                             start_date=interim_df_stock_prices[interim_df_stock_prices['Date'].dt.year == 2014]['Date'].min(),
                             end_date=interim_df_stock_prices[interim_df_stock_prices['Date'].dt.year == 2014]['Date'].max(),
-                            style={'backgroundColor': '#ffffff', 'color': 'white'}  
+                            style={'backgroundColor': '#ffffff', 'color': 'white'}
                         ),
                     ], width=4),
                     dbc.Col([
                         dcc.Checklist(
                             id='explore-theme-toggle',
-                            options=[
-                                {'label': 'Dark Mode', 'value': 'dark'}
-                            ],
+                            options=[{'label': 'Dark Mode', 'value': 'dark'}],
                             value=[]
                         ),
                     ], width=3),
@@ -88,7 +84,11 @@ exploration_layout = html.Div([
                         )
                     ], width=3)
                 ]),
-                dcc.Graph(id='explore-stock_prices', config={'responsive': True})
+                dcc.Loading(
+                    id="loading-explore-graph",  # Add a unique ID to the loading spinner
+                    children=dcc.Graph(id='explore-stock_prices', config={'responsive': True}),
+                    type="circle"  # Type of the spinner (circle is a popular choice)
+                )
             ], width=12, lg=6),
             # Right Column: Insiders Layout
             dbc.Col([
@@ -99,21 +99,24 @@ exploration_layout = html.Div([
                     options=[{'label': i, 'value': i} for i in interim_df_merged['ISSUERTRADINGSYMBOL'].unique()],
                     value='AAPL',
                     clearable=False,
-                    style={'backgroundColor': '#ffffff', 'color': 'white'}  # Initial dark mode style
+                    style={'backgroundColor': '#ffffff', 'color': 'white'}
                 ),
                 html.Label("Choose a date range:"),
                 dcc.DatePickerRange(
                     id='explore-date_range2',
                     start_date=interim_df_merged[interim_df_merged['TRANS_DATE'].dt.year == 2014]['TRANS_DATE'].min(),
                     end_date=interim_df_merged[interim_df_merged['TRANS_DATE'].dt.year == 2014]['TRANS_DATE'].max(),
-                    style={'backgroundColor': '#ffffff', 'color': 'white'}  # Initial dark mode style
+                    style={'backgroundColor': '#ffffff', 'color': 'white'}
                 ),
-                dcc.Graph(id='explore-insiders_trading', config={'responsive': True})
+                dcc.Loading(
+                    id="loading-explore-insiders",  # Another unique ID for the insiders graph spinner
+                    children=dcc.Graph(id='explore-insiders_trading', config={'responsive': True}),
+                    type="circle"
+                )
             ], width=12, lg=6)
         ])
     ], fluid=True)
-], id='explore-main-div', style={'backgroundColor': '#f8f9fa'})  # Light mode default
-
+], id='explore-main-div', style={'backgroundColor': '#f8f9fa'})
 
 
 prediction_layout = html.Div([
@@ -151,32 +154,32 @@ prediction_layout = html.Div([
                     ], width=6),
                 ]),
                 dbc.Row([
-                    dbc.Col([
-                        html.Label("Choose a date range:"),
-                    ], width=2),
+                    dbc.Col([html.Label("Choose a date range:")], width=2),
                     dbc.Col([
                         dcc.DatePickerRange(
                             id='predict-date_range',
                             start_date=processed_df_stock_prices[processed_df_stock_prices['Date'].dt.year == 2014]['Date'].min(),
                             end_date=processed_df_stock_prices[processed_df_stock_prices['Date'].dt.year == 2017]['Date'].max(),
-                            style={'backgroundColor': '#ffffff', 'color': 'black'} 
+                            style={'backgroundColor': '#ffffff', 'color': 'black'}
                         ),
                     ], width=4),
                     dbc.Col([
                         dcc.Checklist(
                             id='predict-theme-toggle',
-                            options=[
-                                {'label': 'Dark Mode', 'value': 'dark'}
-                            ],
+                            options=[{'label': 'Dark Mode', 'value': 'dark'}],
                             value=[]
                         ),
                     ], width=3)
                 ]),
-                dcc.Graph(id='predict-stock_prices', config={'responsive': True})
+                dcc.Loading(
+                    id="loading-predict-graph",  # Unique ID for the prediction spinner
+                    children=dcc.Graph(id='predict-stock_prices', config={'responsive': True}),
+                    type="circle"
+                )
             ], width=12, lg=6,style={'padding': '0px', 'width': '100%'}),
         ],justify='center',style={'padding': '0px', 'width': '100%'})
     ], fluid=True)
-], id='predict-main-div', style={'padding': '0px', 'width': '100%','backgroundColor': '#f8f9fa'})  # Light mode default
+], id='predict-main-div', style={'padding': '0px', 'width': '100%','backgroundColor': '#f8f9fa'})
 
 
 # Define the navigation bar
