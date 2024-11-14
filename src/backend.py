@@ -1,20 +1,22 @@
-import pandas as pd
-import os
 import numpy as np
-import plotly.express as px
+import pandas as pd
+import xgboost as xgb
+from sklearn.linear_model import LinearRegression
 import plotly.graph_objects as go
-from dash import html, dcc, Input, Output
-import dash_bootstrap_components as dbc
 from plotly.subplots import make_subplots
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-from sklearn.metrics import root_mean_squared_error,mean_absolute_percentage_error
-from app import app 
-import xgboost as xgb
+from sklearn.metrics import r2_score, mean_absolute_percentage_error
+from sklearn.metrics import root_mean_squared_error,make_scorer,mean_absolute_percentage_error
+from datetime import timedelta
+import plotly.express as px
+import plotly.io as pio
+
+
+
+
 
 def extract_date_features(df):
     df = df.copy()
@@ -25,24 +27,13 @@ def extract_date_features(df):
     df['day'] = df['Date'].dt.day
     df['day_of_week'] = df['Date'].dt.dayofweek
     df['is_weekend'] = (df['day_of_week'] >= 5).astype(int)
-    # return df.drop(columns='Date')
     return df
 
 
 
-# Define the folder paths
-path_current_file_without_file_name = os.getcwd()
-stock_prices_path = os.path.join(path_current_file_without_file_name, 'data', 'processed', 'stock_prices','processed_stock_prices.csv')
-df_stock_prices = pd.read_csv(stock_prices_path)
-df_stock_prices['Date'] = pd.to_datetime(df_stock_prices['Date'])
 
 
-
-
-# seperate the predictions logic from the dash app.
-# the function below contains core logic for predicting stock prices as well as building blocks of plots
-
-def predict_stock_prices(df_stock_prices, symbol, date_start, date_end,y_predicted_target_desired='Low'):
+def predict_stock_prices(processed_df_stock_prices, symbol, date_start, date_end,y_predicted_target_desired='Low'):
     colors_dark = dict(zip(['Open', 'High', 'Low', 'Close'], ['gray', 'magenta', 'darkblue', 'green']))
     colors_light = {
         'Open': 'lightgray',
@@ -79,10 +70,10 @@ def predict_stock_prices(df_stock_prices, symbol, date_start, date_end,y_predict
         numerical_features = valid_targets[target]
         categorical_features = ['SYMBOL', 'Exists in Insiders']
         
-        data = df_stock_prices[
-            (df_stock_prices['SYMBOL'] == symbol) &
-            (df_stock_prices['Date'] >= date_start) &
-            (df_stock_prices['Date'] <= date_end)
+        data = processed_df_stock_prices[
+            (processed_df_stock_prices['SYMBOL'] == symbol) &
+            (processed_df_stock_prices['Date'] >= date_start) &
+            (processed_df_stock_prices['Date'] <= date_end)
         ].copy()
         data = extract_date_features(data)
         
@@ -175,10 +166,10 @@ def predict_stock_prices(df_stock_prices, symbol, date_start, date_end,y_predict
 
 
     # Add the 'Volume' subplot
-    data = df_stock_prices[
-            (df_stock_prices['SYMBOL'] == symbol) &
-            (df_stock_prices['Date'] >= date_start) &
-            (df_stock_prices['Date'] <= date_end)
+    data = processed_df_stock_prices[
+            (processed_df_stock_prices['SYMBOL'] == symbol) &
+            (processed_df_stock_prices['Date'] >= date_start) &
+            (processed_df_stock_prices['Date'] <= date_end)
         ].copy()
     data = extract_date_features(data)
     target = 'Volume'
@@ -318,6 +309,10 @@ def predict_stock_prices(df_stock_prices, symbol, date_start, date_end,y_predict
 
 
 
+
+
+
+    
     annotation_text_volume_only = f"{y_predicted_target_desired} vs Volume - R²: {metrics['Volume']['R²']:.2e}, RMSE: {metrics['Volume']['RMSE']:.2e}, MAPE: {metrics['Volume']['MAPE']:.2e}"
     # let's calculate the average delta for all points when Exists in Insiders is True
     average_delta_true = df_results[df_results['Exists in Insiders'] == True]['Delta'].mean()
@@ -364,128 +359,3 @@ def predict_stock_prices(df_stock_prices, symbol, date_start, date_end,y_predict
     
     return fig
 
-# the function below will take the figure returned by the predict_stock_prices function and display it in the dash app
-
-    
-    # Initialize the Dash app with Bootstrap
-    # app = Dash('Stocks & Insiders Predictions App', external_stylesheets=[dbc.themes.BOOTSTRAP])
-
-# Define the app layout
-layout = html.Div([
-    dbc.Container([
-        html.H1("Stocks & Insiders Predictions", className='text-center mb-4'),
-        dbc.Row([
-            # Left Column: Stocks Layout
-            dbc.Col([
-                html.H4("Stock Prices Controls"),
-                dbc.Row([
-                    dbc.Col([
-                        html.Label("Choose a symbol:"),
-                        dcc.Dropdown(
-                            id='predict-symbol',
-                            options=[{'label': i, 'value': i} for i in df_stock_prices['SYMBOL'].unique()],
-                            value='AAPL',
-                            clearable=False,
-                            style={'backgroundColor': '#ffffff', 'color': 'black'}  
-                        ),
-                    ], width=6),
-                    dbc.Col([
-                        html.Label("Choose a column:"),
-                        dcc.Dropdown(
-                            id='predict-column',
-                            options=[
-                                {'label': 'Low', 'value': 'Low'},
-                                {'label': 'High', 'value': 'High'},
-                                {'label': 'Close', 'value': 'Close'},
-                                {'label': 'Open', 'value': 'Open'}
-                            ],
-                            value='Low',
-                            clearable=False,
-                            style={'backgroundColor': '#ffffff', 'color': 'black'}  
-                        ),
-                    ], width=6),
-                ]),
-                dbc.Row([
-                    dbc.Col([
-                        html.Label("Choose a date range:"),
-                    ], width=2),
-                    dbc.Col([
-                        dcc.DatePickerRange(
-                            id='predict-date_range',
-                            start_date=df_stock_prices[df_stock_prices['Date'].dt.year == 2014]['Date'].min(),
-                            end_date=df_stock_prices[df_stock_prices['Date'].dt.year == 2014]['Date'].max(),
-                            style={'backgroundColor': '#ffffff', 'color': 'black'} 
-                        ),
-                    ], width=4),
-                    dbc.Col([
-                        dcc.Checklist(
-                            id='predict-theme-toggle',
-                            options=[
-                                {'label': 'Dark Mode', 'value': 'dark'}
-                            ],
-                            value=[]
-                        ),
-                    ], width=3)
-                ]),
-                dcc.Graph(id='predict-stock_prices', config={'responsive': True})
-            ], width=12, lg=6,style={'padding': '0px', 'width': '100%'}),
-        ],justify='center',style={'padding': '0px', 'width': '100%'})
-    ], fluid=True)
-], id='predict-main-div', style={'padding': '0px', 'width': '100%','backgroundColor': '#f8f9fa'})  # Light mode default
-
-# Define a function to style components based on theme
-def get_component_style(theme):
-    if False:#'dark' in theme:
-        return {
-            'backgroundColor': '#2c2c2c',  # Dark background for dropdowns and date pickers
-            'color': 'red',
-            'border': '1px solid #444444',
-        }
-    else:
-        return {
-            'backgroundColor': '#E7E0E0',  # Light background for dropdowns and date pickers
-            'color': 'black',
-            'border': '1px solid #cccccc',
-        }
-
-
-@app.callback(
-    Output('predict-stock_prices', 'figure'),
-    Output('predict-main-div', 'style'),
-    Output('predict-symbol', 'style'),  
-    Output('predict-column', 'style'),  
-    Output('predict-date_range', 'style'),  
-    [Input('predict-symbol', 'value'),
-    Input('predict-column', 'value'),
-    Input('predict-date_range', 'start_date'),
-    Input('predict-date_range', 'end_date'),
-    Input('predict-theme-toggle', 'value')]
-)
-
-
-def update_figure(symbol, column, start_date1, end_date1, theme):
-
-    dropdown_style = get_component_style(theme)
-
-    # Determine theme styles
-    if 'dark' in theme:
-        main_div_style = {'backgroundColor': '#2c2c2c', 'color': 'white'}
-    else:
-        main_div_style = {'backgroundColor': '#f8f9fa', 'color': 'black'}
-
-    # Get styles for each component
-    symbol_style = dropdown_style
-    column_style = dropdown_style
-    date_range_style = dropdown_style
-    # only if date start and end are not valid we do the rest of the code else return  without doing anything
-    if start_date1>end_date1:
-        temp=start_date1
-        start_date1=end_date1
-        end_date1=temp
-    fig_stock_prices = predict_stock_prices(df_stock_prices, symbol, start_date1, end_date1, column)
-    fig_stock_prices.update_layout(
-        plot_bgcolor=main_div_style['backgroundColor'],
-        paper_bgcolor=main_div_style['backgroundColor'],
-        font=dict(color=main_div_style['color'])
-        )
-    return fig_stock_prices,main_div_style, symbol_style, column_style, date_range_style
