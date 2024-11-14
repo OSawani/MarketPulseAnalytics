@@ -1,29 +1,20 @@
 import pandas as pd
 import os
 import numpy as np
-import re
 import plotly.express as px
 import plotly.graph_objects as go
-from dash import Dash, html, dcc, Input, Output
-import plotly.io as pio
+from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 from plotly.subplots import make_subplots
-import random
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
-# from sklearn.metrics import mean_squared_error# deprecated
-from sklearn.metrics import root_mean_squared_error,make_scorer,mean_absolute_percentage_error# alternative
-
+from sklearn.metrics import root_mean_squared_error,mean_absolute_percentage_error
 from app import app 
-from sklearn.preprocessing import FunctionTransformer
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 import xgboost as xgb
-from datetime import timedelta
 
 def extract_date_features(df):
     df = df.copy()
@@ -327,10 +318,6 @@ def predict_stock_prices(df_stock_prices, symbol, date_start, date_end,y_predict
 
 
 
-
-
-
-    
     annotation_text_volume_only = f"{y_predicted_target_desired} vs Volume - R²: {metrics['Volume']['R²']:.2e}, RMSE: {metrics['Volume']['RMSE']:.2e}, MAPE: {metrics['Volume']['MAPE']:.2e}"
     # let's calculate the average delta for all points when Exists in Insiders is True
     average_delta_true = df_results[df_results['Exists in Insiders'] == True]['Delta'].mean()

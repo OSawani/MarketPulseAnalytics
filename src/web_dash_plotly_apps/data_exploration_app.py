@@ -1,26 +1,12 @@
 import pandas as pd
 import os
 import numpy as np
-import re
 import plotly.express as px
 import plotly.graph_objects as go
-from dash import Dash, html, dcc, Input, Output
-import plotly.io as pio
+from dash import html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 from plotly.subplots import make_subplots
-import random
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-# from sklearn.metrics import mean_squared_error# deprecated
-from sklearn.metrics import root_mean_squared_error# alternative
-
 from app import app
-from sklearn.preprocessing import FunctionTransformer
-from sklearn.model_selection import train_test_split
 
 # Define the folder paths
 # get the path of the current file without the file name
