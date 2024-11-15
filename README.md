@@ -59,7 +59,7 @@ This refers to the buying or selling of a company's stock by individuals who hav
 - **Price**: This is the price at which the insider bought or sold the stock. It shows how much was paid for each share during a transaction, and can be compared to the market price to see if the insider's trade was unusual or significant.
 - **Volume**: The volume refers to the total number of shares that were traded in a particular stock during a certain time period. High volume can indicate strong interest in the stock, which could be influenced by insider activity or broader market trends.
 
-### ### Stock Price Data
+### Stock Price Data
 - **Open**: The opening price of the stock for a trading day. This is the price at which the stock first trades when the market opens.
 - **Close**: The closing price of the stock at the end of the trading day. This represents the final trading price of the stock before the market closes.
 - **Low**: The lowest trading price of the stock during the day. It shows the lowest point the stock reached during the trading session.
