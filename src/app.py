@@ -7,7 +7,7 @@ import dash_bootstrap_components as dbc
 from plotly.subplots import make_subplots
 from shared_variables import interim_df_merged, interim_df_stock_prices, interim_df_insider_transactions, processed_df_stock_prices
 from backend import predict_stock_prices
-from frontend import exploration_layout, get_component_style, app_layout, prediction_layout
+from frontend import exploration_layout, get_component_style, app_layout, prediction_layout, landing_layout
 
 
 # --------------------------------------------
@@ -23,7 +23,11 @@ print("----------------------------\n")
 
 
 # Initialize the Dash app
-app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+external_stylesheets = [
+    dbc.themes.COSMO,
+    'https://use.fontawesome.com/releases/v5.8.1/css/all.css',
+]
+app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=external_stylesheets)
 app.layout = app_layout
 server = app.server  # Expose the server for deployment
 # --------------------------------------------
@@ -33,7 +37,9 @@ server = app.server  # Expose the server for deployment
 @app.callback(Output('page-content', 'children'),
               Input('url', 'pathname'))
 def display_page(pathname):
-    if pathname == '/' or pathname == '/data_exploration':
+    if pathname == '/':
+        return landing_layout
+    elif pathname == '/data_exploration':
         return exploration_layout
     elif pathname == '/predictions':
         return prediction_layout
