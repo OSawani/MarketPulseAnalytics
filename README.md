@@ -292,7 +292,7 @@ As a **Data Analyst** and **Investor**, I am interested in understanding and pre
 - **Analyze the correlation** between insider trading activities and stock 'Volume'.
    - Investigate how insider trading (e.g., purchases or sales) correlates with changes in stock volume and price metrics.
 - **Develop regression models incorporating insider data and engineered features**.
-   - Enhance the regression models by adding **insider trading data** and **engineered features** (e.g., lagged features, moving averages).
+   - Enhance the regression models by adding **insider trading data** and **engineered features** (such as lagged features, moving averages).
 - **Utilize advanced algorithms like XGBoost** for better predictions.
    - Implement **XGBoost** or other advanced algorithms to capture non-linear relationships and improve model accuracy, especially for predicting stock volume.
 - **Visualize improvements and feature impacts**.
@@ -315,55 +315,89 @@ As a **Data Analyst** and **Investor**, I am interested in understanding and pre
 
 ### Predicting Stock Metrics
 #### Regression Models for 'Low', 'High', 'Open', 'Close'
-- **Objective**: 
-   - Predict daily stock prices to assist in **investment decisions** by forecasting key stock metrics like 'Low', 'High', 'Open', and 'Close'.
-- **Model**: 
-   - **Linear Regression** will be used to predict these stock metrics based on historical data.  
+- **Objective**:  
+   Develop predictive models to forecast daily stock prices, assisting in **investment decisions** by predicting key stock metrics such as 'Low', 'High', 'Open', and 'Close'.
+- **Machine Learning Task**:  
+   **Supervised learning** using **linear regression** to predict continuous target variables ('Low', 'High', 'Open', 'Close') based on historical data.
+- **Learning Method**:  
+   Implement **linear regression models** to learn the relationship between input features and the target variables.
+- **Features (Variables/Attributes)**:  
+   - **Historical Stock Prices**: Previous values of 'Open', 'High', 'Low', 'Close', and 'Volume'.
+   - **Engineered Features**: Lagged values and moving averages to capture temporal dependencies and trends.
+- **Target Variables (Labels)**:  
+   - Stock metrics: 'Low', 'High', 'Open', and 'Close'.
+- **Model Training**:  
+   - **Train/Fit the Model**: Use historical stock price data to fit the linear regression models, learning the mapping from features to target variables.
+   - **Model Output**: Predictive models capable of forecasting future stock prices based on input features.
+- **Model Metrics**:  
+   - **RMSE**: Measures the average magnitude of the prediction errors.
+   - **R² Score**: Indicates the proportion of variance in the target variable explained by the features.
 #### Success Metrics:
-- **RMSE**: 
-   - The Root Mean Squared Error should be **low**, indicating minimal prediction errors.
-- **R² Score**: 
-   - The R² score should be **close to 1**, indicating a strong explanatory power of the model.
+- **RMSE**: The Root Mean Squared Error should be **low**, indicating minimal prediction errors between the predicted and actual stock prices.
+- **R² Score**: The R² score should be **close to 1**, indicating a strong explanatory power of the model.
 #### Failure Conditions:
-- **High RMSE**: 
-   - A high RMSE would indicate large prediction errors, meaning the model is not providing accurate predictions.
-- **Low R² Score**: 
-   - A low R² score means the model is not explaining the variance in stock prices well.
-- **Inability to capture trends**: 
-   - If the model fails to capture the underlying trends in stock prices, it would indicate that the linear regression model is not sufficient.
+- **High RMSE**: A high RMSE would indicate large prediction errors, meaning the model is not providing accurate predictions.
+- **Low R² Score**: A low R² score means the model is not explaining the variance in stock prices well.
+- **Inability to Capture Trends**: If the model fails to capture underlying trends in stock prices, it would indicate that the linear regression model is not sufficient and may require more complex methods.
 
 ### Predicting 'Volume'
 #### Initial Model: Linear Regression
-- **Issue**: 
-   - Linear regression is expected to **perform poorly** on predicting stock **Volume** due to potential **non-linear relationships** and the **lack of insider information** in the model.
+- **Issue**:  
+   Linear regression is expected to **perform poorly** in predicting stock **Volume** due to potential **non-linear relationships** between the features and the target variable, and the **lack of insider information** in the initial model.
 #### Advanced Model: XGBoost Regression with Insider Trading Data and Engineered Features
-- **Approach**: 
-   - To improve performance, **XGBoost Regression** will be applied, incorporating **insider trading data** and **engineered features** (such as lagged values and moving averages).
+- **Approach**:  
+   To improve performance, **XGBoost Regression** will be applied, incorporating **insider trading data** and **engineered features** (such as lagged values and moving averages) to capture more complex patterns in the data.
+- **Machine Learning Task**:  
+   **Supervised learning** for regression to predict the continuous target variable 'Volume'.
+- **Learning Method**:  
+   Utilize **XGBoost Regression**, a gradient boosting method, which can model complex non-linear relationships between features and the target variable.
+- **Features (Variables/Attributes)**:  
+   - **Original Stock Metrics**: 'Open', 'High', 'Low', 'Close', and 'Volume'.
+   - **Engineered Features**: Lagged values, moving averages.
+   - **Insider Trading Data**: Features derived from insider activities such as the **number of trades**, **trade volumes**, and **transaction types** (buy/sell).
+- **Target Variable (Label)**:  
+   - Stock **Volume**.
+- **Model Training**:  
+   - **Train/Fit the Model**: Incorporate the expanded feature set (stock metrics, insider data, and engineered features) to train the XGBoost regression model, learning the complex interactions between these features and the target variable.
+   - **Model Output**: An enhanced predictive model capable of accurately forecasting stock **Volume**.
+- **Model Metrics**:  
+   - **RMSE**: Used to assess the magnitude of prediction error.
+   - **R² Score**: Evaluates how well the features explain the variance in **Volume**.
 #### Success Metrics:
-- **RMSE**: 
-   - A **significant reduction** in RMSE compared to the initial linear regression model would indicate a substantial improvement in prediction accuracy.
-- **R² Score**: 
-   - A positive and higher **R² score** compared to the linear regression model would demonstrate that the advanced model is better at explaining the variance in stock volume.
+- **RMSE**: A **significant reduction** in RMSE compared to the initial linear regression model would indicate a substantial improvement in prediction accuracy.
+- **R² Score**: A positive and higher **R² score** compared to the linear regression model would demonstrate that the advanced model is better at explaining the variance in stock volume.
 #### Failure Conditions:
-- **Negative R² Scores**: 
-   - If the model continues to produce negative R² scores, it means the model is a poor fit for the data, and further improvements are needed.
-- **Minimal Improvement**: 
-   - If there is minimal improvement in performance after adding insider data and engineered features, the model may not be capturing the true dynamics of stock volume and would require further investigation or a different approach.
+- **Negative R² Scores**: If the model continues to produce **negative R² scores**, it means the model is a poor fit for the data, and further improvements are needed.
+- **Minimal Improvement**: If there is minimal improvement in performance after adding insider data and engineered features, the model may not be capturing the true dynamics of stock volume and would require further investigation or a different approach.
 
 ### Data Utilization
 #### Training Data:
-- **Historical stock prices**:
-   - Data for stock metrics including 'Open', 'High', 'Low', 'Close', and 'Volume'.
-- **Insider trading data**:
-   - Information on insider activities, such as the **number of trades**, **trade volumes**, and **transaction types** (buy/sell).
+- **Historical Stock Prices**:  
+   Data for stock metrics including 'Open', 'High', 'Low', 'Close', and 'Volume'.
+- **Insider Trading Data**:  
+   Information on insider activities, including:
+   - **Number of trades**
+   - **Trade volumes**
+   - **Transaction types** (buy/sell)
 #### Features:
-- **Original Stock Metrics**:
-   - The basic stock metrics like 'Open', 'High', 'Low', 'Close', and 'Volume'.
+- **Original Stock Metrics**:  
+   The basic stock metrics like 'Open', 'High', 'Low', 'Close', and 'Volume'.
 - **Engineered Features**:
-   - **Lagged values**: Stock prices from previous days to capture temporal dependencies.
-   - **Moving averages**: To capture trends and smooth out short-term fluctuations.
-- **Insider Activity Indicators**:
-   - Features derived from insider trading behavior, such as the number of shares bought/sold, timing of trades, etc.
+   - **Lagged Values**: Stock prices from previous days to capture temporal dependencies.
+   - **Moving Averages**: To capture trends and smooth out short-term fluctuations.
+- **Insider Activity Indicators**:  
+   Features derived from insider trading behavior, such as:
+   - The **number of shares bought/sold**
+   - Timing of trades
+#### Target Variables (Labels):
+- Stock metrics: **'Low'**, **'High'**, **'Open'**, **'Close'**, and **'Volume'**.
+
+---
+
+### Machine Learning Tasks Used in the Project:
+- **Regression Analysis**: Predicting continuous target variables ('Low', 'High', 'Open', 'Close', 'Volume') using supervised learning.
+- **Feature Engineering**: Creating new features from raw data to improve model performance.
+- **Model Training and Evaluation**: Fitting models to training data and evaluating performance using appropriate metrics (e.g., RMSE, R² Score).
 
 
 ---
@@ -521,10 +555,10 @@ This guide will help you set up the project in a virtual environment and install
    ```
 
  7. **Run App**:
- Run app.py located in src folder:
- ```bash
- python app.py
- ```
+   Run app.py located in src folder:
+   ```bash
+   python app.py
+   ```
 
 #### Additional Information
 
@@ -538,7 +572,7 @@ The App live link [here](http://78.47.57.201:8050/).
 **Python Version:** Specified in runtime.txt 
 
 **Deployment Steps:**
-  1. **Log in to Cloud Platform and Configure Serverp**
+  1. **Log in to Cloud Platform and Configure Server**
   2. **Clone GitHub Repository**
   3. **Setup Web Server of Choice**
 
