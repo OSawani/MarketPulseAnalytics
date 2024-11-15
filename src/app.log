@@ -1,0 +1,44 @@
+nohup: ignoring input
+shared variables script directory:  /home/sawani/omar_project/MarketPulseAnalytics/src
+data_exploration app new current directory to:  /home/sawani/omar_project/MarketPulseAnalytics
+----------------------------
+
+Dataset ETL started.
+----------------------------
+datapipeline script directory:  /home/sawani/omar_project/MarketPulseAnalytics/src
+datapipeline script new current directory to:  /home/sawani/omar_project/MarketPulseAnalytics
+----------------------------
+
+File already exists: data/downloaded/zip_insider_transactions/sec-insider-transactions.zip
+----------------------------
+
+File already exists: data/downloaded/zip_stock_prices/price-volume-data-for-all-us-stocks-etfs.zip
+----------------------------
+
+Unzipping data/downloaded/zip_stock_prices/price-volume-data-for-all-us-stocks-etfs.zip to data/downloaded/zip_stock_prices...
+The destination folder 'data/raw/stock_prices/' is not empty. Aborting unzipping.
+----------------------------
+
+Unzipping data/downloaded/zip_insider_transactions/sec-insider-transactions.zip to data/raw/insider_transactions/...
+The destination folder 'data/raw/insider_transactions/' is not empty. Aborting unzipping.
+----------------------------
+
+Starting interim data processing...
+CSV interim already exist.
+----------------------------
+
+Starting processed data saving...
+CSV processed already exist
+----------------------------
+
+Dataset ETL successful.
+----------------------------
+App script directory:  /home/sawani/omar_project/MarketPulseAnalytics/src
+app new current directory to:  /home/sawani/omar_project/MarketPulseAnalytics
+----------------------------
+
+Dash is running on http://0.0.0.0:8050/
+
+ * Serving Flask app 'app'
+ * Debug mode: on
+/home/sawani/omar_project/myenv/bin/python3: can't open file '/home/sawani/omar_project/MarketPulseAnalytics/app.py': [Errno 2] No such file or directory

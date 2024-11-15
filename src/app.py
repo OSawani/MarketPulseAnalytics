@@ -287,5 +287,4 @@ def exploration_update_figure(symbol, column, symbol2, start_date2, end_date2, s
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8050))  # Fallback to 8050 for local development
-    app.run_server(debug=False, host='0.0.0.0', port=port)
+    app.run_server(debug=False, host='0.0.0.0', port=8050)
